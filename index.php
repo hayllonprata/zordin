@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'], $_POST['status'
 
 // funções para buscar dados
 function fetchContas($pdo, $table, $filter) {
-    $sql = "SELECT * FROM $table WHERE $filter AND user_id = '5511916674140'";
+    $sql = "SELECT * FROM $table WHERE $filter AND user_id = '5511916674140' ORDER BY data ASC";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
