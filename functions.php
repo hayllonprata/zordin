@@ -99,14 +99,14 @@ class FinancialOperations {
         $recebido = $this->pdo->prepare(
             "SELECT COALESCE(SUM(valor), 0) as total 
             FROM a_receber 
-            WHERE status = 'pago' AND user_id = :userId"
+            WHERE user_id = :userId"
         );
         $recebido->execute([':userId' => $this->userId]);
         
         $pago = $this->pdo->prepare(
             "SELECT COALESCE(SUM(valor), 0) as total 
             FROM a_pagar 
-            WHERE status = 'pago' AND user_id = :userId"
+            WHERE user_id = :userId"
         );
         $pago->execute([':userId' => $this->userId]);
 
