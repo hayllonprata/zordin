@@ -60,14 +60,14 @@ $saldo = calcularSaldo($pdo);
             color: #ffffff;
         }
         .card {
-            background: linear-gradient(45deg, #1e1e1e, #343434);
+            background: linear-gradient(45deg, #1a1a1a, #2b2b2b);
             margin-top: 20px;
         }
         .card-receber {
-            background: linear-gradient(45deg, #34eb77, #28a745) !important;
+            background: linear-gradient(45deg, #28a745, #1d7e32) !important;
         }
         .card-pagar {
-            background: linear-gradient(45deg, #eb4034, #dc3545) !important;
+            background: linear-gradient(45deg, #dc3545, #a62634) !important;
         }
         h5, h2, ul li {
             color: #ffffff;
@@ -110,7 +110,7 @@ $saldo = calcularSaldo($pdo);
                         <ul>
                             <?php foreach ($dados[$key]['a_receber'] as $receber): ?>
                                 <li>
-                                    <?= $receber['descricao'] ?> - R$ <?= number_format($receber['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($receber['data'])) ?>
+                                    <?= $receber['descricao'] ?> - R$ <?= number_format($receber['valor'], 2, ',', '.') ?><?= date('d/m/Y', strtotime($receber['data'])) ?>
                                     <span class="status">- <?= strtoupper($receber['status']) ?></span>
                                 </li>
                             <?php endforeach; ?>
@@ -123,7 +123,7 @@ $saldo = calcularSaldo($pdo);
                         <ul>
                             <?php foreach ($dados[$key]['a_pagar'] as $pagar): ?>
                                 <li>
-                                    <?= $pagar['descricao'] ?> - R$ <?= number_format($pagar['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($pagar['data'])) ?>
+                                    <?= $pagar['descricao'] ?> - R$ <?= number_format($pagar['valor'], 2, ',', '.') ?><?= date('d/m/Y', strtotime($pagar['data'])) ?>
                                     <span class="status">- <?= strtoupper($pagar['status']) ?></span>
                                 </li>
                             <?php endforeach; ?>
