@@ -281,9 +281,13 @@ li:hover {
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
-    margin-bottom: 0.25rem;
     margin-top: 1rem;
     width: 100%;
+}
+
+.btn-new:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(48, 47, 48, 0.3);
 }
 
 select {
