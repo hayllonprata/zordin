@@ -14,7 +14,7 @@ body {
     min-height: 100vh;
 }
 .sucess{
-    border: solid 1px #3CB770;
+    border: solid 1px #3CB770 !important;
 }
 
 .container {
