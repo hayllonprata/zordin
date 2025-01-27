@@ -110,7 +110,7 @@ $saldo = calcularSaldo($pdo);
             color: #ffffff;
         }
         .btn-status.nao-pago {
-            background-color: red;
+            background-color: #ff0000;
             color: #ffffff;
         }
         @media (min-width: 992px) {
