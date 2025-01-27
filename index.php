@@ -13,7 +13,7 @@ try {
 
 // funções para buscar dados
 function fetchContas($pdo, $table, $filter) {
-    $sql = "SELECT * FROM $table WHERE $filter AND user_id = 5511916674140";
+    $sql = "SELECT * FROM $table WHERE $filter AND user_id = CAST(5511916674140 AS BIGINT)";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -21,8 +21,8 @@ function fetchContas($pdo, $table, $filter) {
 
 // calcula o saldo
 function calcularSaldo($pdo) {
-    $recebido = $pdo->query("SELECT SUM(valor) as total FROM a_receber WHERE status = 'pago' AND user_id = 5511916674140")->fetch()['total'] ?? 0;
-    $pago = $pdo->query("SELECT SUM(valor) as total FROM a_pagar WHERE status = 'pago' AND user_id = 5511916674140")->fetch()['total'] ?? 0;
+    $recebido = $pdo->query("SELECT SUM(valor) as total FROM a_receber WHERE status = 'pago' AND user_id = CAST(5511916674140 AS BIGINT)")->fetch()['total'] ?? 0;
+    $pago = $pdo->query("SELECT SUM(valor) as total FROM a_pagar WHERE status = 'pago' AND user_id = CAST(5511916674140 AS BIGINT)")->fetch()['total'] ?? 0;
     return $recebido - $pago;
 }
 
