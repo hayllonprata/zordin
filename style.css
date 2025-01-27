@@ -5,6 +5,7 @@
     --card-bg: rgba(23, 23, 23, 0.8);
     --text-color: #E5E7EB;
     --input-bg: rgba(17, 17, 17, 0.8);
+    background: linear-gradient(135deg, #121212, #1e1e1e);
 }
 
 body {
