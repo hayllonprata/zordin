@@ -66,76 +66,226 @@ $saldo = calcularSaldo($pdo);
     <title>Zordin - Dashboard Financeiro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-purple: #8B5CF6;
+            --dark-bg: #0A0A0A;
+            --card-bg: rgba(23, 23, 23, 0.8);
+            --text-color: #E5E7EB;
+            --input-bg: rgba(17, 17, 17, 0.8);
+        }
+
         body {
-            background-color: #121212;
-            color: #ffffff;
+            background-color: var(--dark-bg);
+            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            min-height: 100vh;
+            background: radial-gradient(ellipse at top, #2D1B69, transparent),
+                        radial-gradient(ellipse at bottom, #1F1B4D, transparent);
         }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
         .card {
-            background: linear-gradient(45deg, #1a1a1a, #2b2b2b);
-            margin-top: 20px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
         }
-        .card-receber {
-            background: linear-gradient(45deg, #28a745, #1d7e32) !important;
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 3rem;
+            text-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
         }
-        .card-pagar {
-            background: linear-gradient(45deg, #dc3545, #a62634) !important;
+
+        h2 {
+            color: var(--text-color);
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0;
         }
-        h5, h2, ul li, .new-card h5 {
-            color: #ffffff;
+
+        h5 {
+            color: var(--text-color);
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
         }
-        .new-card ul {
+
+        .btn-status {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .btn-status.pago {
+            background-color: var(--primary-purple);
+            color: white;
+        }
+
+        .btn-status.nao-pago {
+            background-color: rgba(220, 53, 69, 0.8);
+            color: white;
+        }
+
+        ul {
             list-style: none;
             padding: 0;
+            margin: 0;
         }
-        .new-card ul li {
+
+        li {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 10px;
-            flex-direction: row;
-            padding: 10px;
-            position: relative;
+            align-items: center;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
         }
-        .new-card ul li .content-wrapper {
+
+        li:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .content-wrapper {
             flex-grow: 1;
-            margin-right: 15px;
-            display: flex;
-            flex-direction: column;
+            margin-right: 1rem;
         }
-        .new-card ul li .content-wrapper .date {
-            font-size: 0.9em;
-            color: #888;
-            margin-top: 5px;
+
+        .description {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
         }
-        .btn-status {
-            border: none;
-            border-radius: 5px;
-            padding: 5px 10px;
-            text-transform: uppercase;
-            font-size: 12px;
+
+        .date {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.6);
         }
-        .btn-status.pago {
-            background-color: #28a745;
-            color: #ffffff;
-        }
-        .btn-status.nao-pago {
-            background-color: #8B0000 !important;
-            color: #ffffff;
-            margin-left: auto;
-        }
-        .card-lancamentos-receber {
-            border: 1px solid #ccc !important;
-        }
-        .card-lancamentos-pagar {
-            border: 1px solid #ccc !important;
-        }
-        @media (min-width: 992px) {
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 2rem;
+            }
+
             .card {
-                display: block;
-                width: 100%;
+                padding: 1rem;
             }
         }
     </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Zordin - Sistema Financeiro</h1>
+
+        <!-- Saldo -->
+        <div class="card">
+            <h5>Saldo em Conta</h5>
+            <h2 class="text-success">R$ <?= number_format($saldo, 2, ',', '.') ?></h2>
+        </div>
+
+        <!-- Totais do dia -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <h5>Contas a Receber - Hoje</h5>
+                    <h2>R$ <?= number_format($totais['hoje']['a_receber'], 2, ',', '.') ?></h2>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card">
+                    <h5>Contas a Pagar - Hoje</h5>
+                    <h2>R$ <?= number_format($totais['hoje']['a_pagar'], 2, ',', '.') ?></h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Totais do mês -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <h5>Contas a Receber - Mês</h5>
+                    <h2>R$ <?= number_format($totais['mes']['a_receber'], 2, ',', '.') ?></h2>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card">
+                    <h5>Contas a Pagar - Mês</h5>
+                    <h2>R$ <?= number_format($totais['mes']['a_pagar'], 2, ',', '.') ?></h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lançamentos a Receber -->
+        <div class="card">
+            <h5>Lançamentos a Receber</h5>
+            <ul>
+                <?php
+                $aReceberEntries = fetchContas($pdo, 'a_receber', "data BETWEEN '$inicioMes' AND '$hoje'");
+                foreach ($aReceberEntries as $entry):
+                ?>
+                <li>
+                    <div class="content-wrapper">
+                        <span class="description"><?= $entry['descricao'] ?></span>
+                        <span class="date"><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
+                    </div>
+                    <button 
+                        id="status-a_receber-<?= $entry['id'] ?>" 
+                        class="btn-status <?= str_replace(' ', '-', $entry['status']) ?>" 
+                        onclick="toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_receber')">
+                        <?= strtoupper($entry['status']) ?>
+                    </button>
+                </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+
+        <!-- Lançamentos a Pagar -->
+        <div class="card">
+            <h5>Lançamentos a Pagar</h5>
+            <ul>
+                <?php
+                $aPagarEntries = fetchContas($pdo, 'a_pagar', "data BETWEEN '$inicioMes' AND '$hoje'");
+                foreach ($aPagarEntries as $entry):
+                ?>
+                <li>
+                    <div class="content-wrapper">
+                        <span class="description"><?= $entry['descricao'] ?></span>
+                        <span class="date"><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
+                    </div>
+                    <button 
+                        id="status-a_pagar-<?= $entry['id'] ?>" 
+                        class="btn-status <?= str_replace(' ', '-', $entry['status']) ?>" 
+                        onclick="toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_pagar')">
+                        <?= strtoupper($entry['status']) ?>
+                    </button>
+                </li>
+                <?php endforeach; ?>
+            </ul>
+        </div>
+    </div>
+
     <script>
         async function toggleStatus(id, status, table) {
             try {
@@ -156,12 +306,11 @@ $saldo = calcularSaldo($pdo);
 
                 const button = document.getElementById(`status-${table}-${id}`);
                 if (button) {
-                    button.className = `btn btn-status ${newStatus.replace(' ', '-')}`;
+                    button.className = `btn-status ${newStatus.replace(' ', '-')}`;
                     button.innerText = newStatus.toUpperCase();
                     button.setAttribute('onclick', `toggleStatus(${id}, '${newStatus}', '${table}')`);
                 }
 
-                // Recarrega a página para atualizar os totais
                 location.reload();
             } catch (error) {
                 console.error('Erro:', error);
@@ -169,84 +318,6 @@ $saldo = calcularSaldo($pdo);
             }
         }
     </script>
-</head>
-<body>
-    <div class="container my-5">
-        <h1 class="text-center">Zordin - Sistema Financeiro</h1>
-        <div class="row my-4">
-            <div class="col-md-4">
-                <div class="card p-3">
-                    <h5>Saldo em Conta</h5>
-                    <h2 class="text-success">R$ <?= number_format($saldo, 2, ',', '.') ?></h2>
-                </div>
-            </div>
-        </div>
-
-        <div class="row my-4">
-            <?php foreach (['hoje' => 'Hoje', 'mes' => 'Mês'] as $key => $label): ?>
-                <div class="col-12">
-                    <div class="card card-receber p-3">
-                        <h5>Contas a Receber - <?= $label ?></h5>
-                        <h2>R$ <?= number_format($totais[$key]['a_receber'], 2, ',', '.') ?></h2>
-                    </div>
-                </div>
-                <div class="col-12">
-                    <div class="card card-pagar p-3">
-                        <h5>Contas a Pagar - <?= $label ?></h5>
-                        <h2>R$ <?= number_format($totais[$key]['a_pagar'], 2, ',', '.') ?></h2>
-                    </div>
-                </div>
-            <?php endforeach; ?>
-            <div class="col-12">
-                <div class="card new-card p-3 card-lancamentos-receber">
-                    <h5>Lançamentos a Receber</h5>
-                    <ul>
-                        <?php
-                        $aReceberEntries = fetchContas($pdo, 'a_receber', "data BETWEEN '$inicioMes' AND '$hoje'");
-                        foreach ($aReceberEntries as $entry):
-                        ?>
-                        <li>
-                            <div class="content-wrapper">
-                                <span class="description"><?= $entry['descricao'] ?></span>
-                                <span class="date"><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
-                            </div>
-                            <button 
-                                id="status-a_receber-<?= $entry['id'] ?>" 
-                                class="btn btn-status <?= str_replace(' ', '-', $entry['status']) ?>" 
-                                onclick="toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_receber')">
-                                <?= strtoupper($entry['status']) ?>
-                            </button>
-                        </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="card new-card p-3 card-lancamentos-pagar">
-                    <h5>Lançamentos a Pagar</h5>
-                    <ul>
-                        <?php
-                        $aPagarEntries = fetchContas($pdo, 'a_pagar', "data BETWEEN '$inicioMes' AND '$hoje'");
-                        foreach ($aPagarEntries as $entry):
-                        ?>
-                        <li>
-                            <div class="content-wrapper">
-                                <span class="description"><?= $entry['descricao'] ?></span>
-                                <span class="date"><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
-                            </div>
-                            <button 
-                                id="status-a_pagar-<?= $entry['id'] ?>" 
-                                class="btn btn-status <?= str_replace(' ', '-', $entry['status']) ?>" 
-                                onclick="toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_pagar')">
-                                <?= strtoupper($entry['status']) ?>
-                            </button>
-                        </li>
-                        <?php endforeach; ?>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
