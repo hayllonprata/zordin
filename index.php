@@ -150,16 +150,20 @@ $saldo = calcularSaldo($pdo);
             border: none;
             transition: all 0.2s ease;
             cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .btn-status.pago {
-            background-color: var(--primary-purple);
+            background: linear-gradient(135deg, #8B5CF6, #7c4ef0);
             color: white;
+            box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
         }
 
         .btn-status.nao-pago {
-            background-color: linear-gradient(135deg, #4c2c2c, #331a1a);
+            background: linear-gradient(135deg, #c17a7a, #b36e6e);
             color: white;
+            box-shadow: 0 2px 4px rgba(193, 122, 122, 0.2);
         }
 
         ul {
