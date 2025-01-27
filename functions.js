@@ -2,6 +2,10 @@
 // Função para formatar moeda enquanto digita
 function formatCurrency(input) {
     let value = input.value.replace(/\D/g, ''); // Remove tudo que não é número
+    if (value === '') {
+        input.value = '0,00';
+        return;
+    }
     value = (parseFloat(value) / 100).toFixed(2); // Converte para decimal
     value = value.replace('.', ','); // Troca ponto por vírgula
     value = value.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.'); // Adiciona pontos
@@ -10,6 +14,7 @@ function formatCurrency(input) {
 
 // Função para converter valor formatado para o formato do banco
 function parseCurrencyToFloat(value) {
+    if (!value) return 0;
     return parseFloat(value.replace(/\./g, '').replace(',', '.'));
 }
 
@@ -18,15 +23,20 @@ const modal = document.getElementById('editModal');
 const editForm = document.getElementById('editForm');
 const closeModalBtn = document.querySelector('.modal-close');
 const valorInput = document.getElementById('editValor');
+const newModal = document.getElementById('newModal');
+const newForm = document.getElementById('newForm');
+const newValorInput = document.getElementById('newValor');
 
-// Adiciona a máscara de moeda ao input de valor
-if (valorInput) {
-    valorInput.addEventListener('input', function(e) {
-        formatCurrency(e.target);
-    });
-}
+// Adiciona a máscara de moeda aos inputs de valor
+[valorInput, newValorInput].forEach(input => {
+    if (input) {
+        input.addEventListener('input', function(e) {
+            formatCurrency(e.target);
+        });
+    }
+});
 
-// Função para abrir modal
+// Função para abrir modal de edição
 async function openEditModal(id, table) {
     try {
         const formData = new FormData();
@@ -44,17 +54,22 @@ async function openEditModal(id, table) {
         }
 
         const data = await response.json();
+        if (!data) {
+            throw new Error('Dados não encontrados');
+        }
         
         document.getElementById('editId').value = data.id;
         document.getElementById('editTable').value = table;
         document.getElementById('editDescricao').value = data.descricao;
         
         // Formata o valor para exibição
-        const valorFormatado = parseFloat(data.valor).toFixed(2).replace('.', ',');
-        document.getElementById('editValor').value = valorFormatado;
+        if (data.valor) {
+            const valor = parseFloat(data.valor);
+            const valorFormatado = valor.toFixed(2).replace('.', ',');
+            document.getElementById('editValor').value = valorFormatado;
+        }
         
         document.getElementById('editData').value = data.data;
-
         modal.style.display = 'block';
     } catch (error) {
         console.error('Erro:', error);
@@ -62,21 +77,37 @@ async function openEditModal(id, table) {
     }
 }
 
-// Função para fechar modal
+// Função para abrir modal de novo lançamento
+function openNewModal() {
+    newModal.style.display = 'block';
+    document.getElementById('newData').value = new Date().toISOString().split('T')[0];
+    document.getElementById('newValor').value = '0,00';
+}
+
+// Função para fechar modal de edição
 function closeModal() {
     modal.style.display = 'none';
     editForm.reset();
 }
 
-// Evento de click no botão de fechar
+// Função para fechar modal de novo lançamento
+function closeNewModal() {
+    newModal.style.display = 'none';
+    newForm.reset();
+}
+
+// Eventos de click nos botões de fechar
 if (closeModalBtn) {
     closeModalBtn.onclick = closeModal;
 }
 
-// Fechar modal ao clicar fora
+// Fechar modais ao clicar fora
 window.onclick = function(event) {
     if (event.target == modal) {
         closeModal();
+    }
+    if (event.target == newModal) {
+        closeNewModal();
     }
 }
 
@@ -164,38 +195,7 @@ if (editForm) {
     });
 }
 
-// Inicialização quando o DOM estiver carregado
-document.addEventListener('DOMContentLoaded', function() {
-    // Verifica se existem elementos necessários
-    if (!modal || !editForm) {
-        console.error('Elementos necessários não encontrados!');
-        return;
-    }
-
-    // Adiciona máscaras e eventos iniciais
-    const inputs = document.querySelectorAll('input[name="valor"]');
-    inputs.forEach(input => {
-        input.addEventListener('input', function(e) {
-            formatCurrency(e.target);
-        });
-    });
-});
-
-// Modal de novo lançamento
-const newModal = document.getElementById('newModal');
-const newForm = document.getElementById('newForm');
-
-function openNewModal() {
-    newModal.style.display = 'block';
-    document.getElementById('newData').value = new Date().toISOString().split('T')[0];
-}
-
-function closeNewModal() {
-    newModal.style.display = 'none';
-    newForm.reset();
-}
-
-// Adicionar manipulação do formulário de novo lançamento
+// Manipulação do formulário de novo lançamento
 if (newForm) {
     newForm.addEventListener('submit', async function(e) {
         e.preventDefault();
@@ -227,12 +227,19 @@ if (newForm) {
     });
 }
 
-// Atualizar o evento de click fora do modal
-window.onclick = function(event) {
-    if (event.target == modal) {
-        closeModal();
+// Inicialização quando o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', function() {
+    // Verifica se existem elementos necessários
+    if (!modal || !editForm || !newModal || !newForm) {
+        console.error('Elementos necessários não encontrados!');
+        return;
     }
-    if (event.target == newModal) {
-        closeNewModal();
-    }
-}
+
+    // Adiciona máscaras e eventos iniciais
+    const inputs = document.querySelectorAll('input[name="valor"]');
+    inputs.forEach(input => {
+        input.addEventListener('input', function(e) {
+            formatCurrency(e.target);
+        });
+    });
+});
