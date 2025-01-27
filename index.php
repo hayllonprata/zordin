@@ -84,16 +84,12 @@ $saldo = calcularSaldo($pdo);
             color: #ffffff;
         }
         .status-btn {
-            text-align: right;
-            text-transform: uppercase;
             border: none;
             border-radius: 5px;
             padding: 5px 10px;
             color: #ffffff;
             cursor: pointer;
-            position: absolute;
-            right: 10px;
-            top: 10px;
+            text-transform: uppercase;
         }
         .status-btn.nao-pago {
             background-color: #8B0000;
@@ -102,7 +98,14 @@ $saldo = calcularSaldo($pdo);
             background-color: #006400;
         }
         .card ul {
-            position: relative;
+            list-style: none;
+            padding: 0;
+        }
+        .card ul li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
         }
         @media (min-width: 992px) {
             .card {
@@ -124,8 +127,9 @@ $saldo = calcularSaldo($pdo);
                 body: formData
             });
 
-            document.getElementById(`status-${table}-${id}`).className = `status-btn ${newStatus.replace(' ', '-')}`;
-            document.getElementById(`status-${table}-${id}`).innerText = newStatus.toUpperCase();
+            const button = document.getElementById(`status-${table}-${id}`);
+            button.className = `status-btn ${newStatus.replace(' ', '-')}`;
+            button.innerText = newStatus.toUpperCase();
         }
     </script>
 </head>
@@ -149,7 +153,7 @@ $saldo = calcularSaldo($pdo);
                         <ul>
                             <?php foreach ($dados[$key]['a_receber'] as $receber): ?>
                                 <li>
-                                    <?= $receber['descricao'] ?> - R$ <?= number_format($receber['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($receber['data'])) ?>
+                                    <span><?= $receber['descricao'] ?> - R$ <?= number_format($receber['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($receber['data'])) ?></span>
                                     <button 
                                         id="status-a_receber-<?= $receber['id'] ?>" 
                                         class="status-btn <?= $receber['status'] ?>" 
@@ -167,7 +171,7 @@ $saldo = calcularSaldo($pdo);
                         <ul>
                             <?php foreach ($dados[$key]['a_pagar'] as $pagar): ?>
                                 <li>
-                                    <?= $pagar['descricao'] ?> - R$ <?= number_format($pagar['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($pagar['data'])) ?>
+                                    <span><?= $pagar['descricao'] ?> - R$ <?= number_format($pagar['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($pagar['data'])) ?></span>
                                     <button 
                                         id="status-a_pagar-<?= $pagar['id'] ?>" 
                                         class="status-btn <?= $pagar['status'] ?>" 
