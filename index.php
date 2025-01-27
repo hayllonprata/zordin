@@ -73,6 +73,31 @@ $totais = [
     ]
 ];
 $saldo = calcularSaldo($pdo);
+
+
+// Processa a edição
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'edit') {
+    $id = (int)$_POST['id'];
+    $table = $_POST['table'];
+    $descricao = $_POST['descricao'];
+    $valor = str_replace(',', '.', str_replace('.', '', $_POST['valor']));
+    $data = $_POST['data'];
+
+    try {
+        $stmt = $pdo->prepare("UPDATE $table SET descricao = :descricao, valor = :valor, data = :data WHERE id = :id AND user_id = '5511916674140'");
+        $stmt->execute([
+            ':id' => $id,
+            ':descricao' => $descricao,
+            ':valor' => $valor,
+            ':data' => $data
+        ]);
+        exit;
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo "Erro ao atualizar: " . $e->getMessage();
+        exit;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -261,10 +286,10 @@ $saldo = calcularSaldo($pdo);
             display: flex;
             flex-direction: column;
             gap: 0.5rem;
-            min-width: 120px; /* Largura fixa para todos os botões */
+            min-width: 120px;
         }
 
-        .btn-status {
+        .btn-status, .btn-edit, .btn-delete {
             width: 100%;
             padding: 0.5rem 1rem;
             border-radius: 8px;
@@ -289,17 +314,18 @@ $saldo = calcularSaldo($pdo);
             box-shadow: 0 2px 4px rgba(193, 122, 122, 0.2);
         }
 
+        .btn-edit {
+            background: linear-gradient(135deg, #4A90E2, #5B9FE6);
+            color: white;
+            box-shadow: 0 2px 4px rgba(74, 144, 226, 0.2);
+        }
+
+        .btn-edit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(74, 144, 226, 0.3);
+        }
+
         .btn-delete {
-            width: 100%;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            border: none;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
             background: #333;
             color: white;
         }
@@ -307,6 +333,86 @@ $saldo = calcularSaldo($pdo);
         .btn-delete:hover {
             background: #444;
             transform: translateY(-1px);
+        }
+
+        /* Modal de Edição */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: relative;
+            background: var(--card-bg);
+            margin: 15% auto;
+            padding: 20px;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal-header {
+            margin-bottom: 20px;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 20px;
+            top: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-color);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-color);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .modal-footer {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-save {
+            background: linear-gradient(135deg, #3CB770, #4BDC87);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-cancel {
+            background: #333;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -353,7 +459,38 @@ $saldo = calcularSaldo($pdo);
             </div>
         </div>
 
-        <div class="card">
+  <!-- Modal de Edição -->
+  <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Editar Lançamento</h5>
+                <span class="modal-close">&times;</span>
+            </div>
+            <form id="editForm">
+                <input type="hidden" id="editId" name="id">
+                <input type="hidden" id="editTable" name="table">
+                <div class="form-group">
+                    <label for="editDescricao">Descrição</label>
+                    <input type="text" id="editDescricao" name="descricao" required>
+                </div>
+                <div class="form-group">
+                    <label for="editValor">Valor</label>
+                    <input type="text" id="editValor" name="valor" required>
+                </div>
+                <div class="form-group">
+                    <label for="editData">Data</label>
+                    <input type="date" id="editData" name="data" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-save">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modificação na estrutura dos botões dentro dos cards -->
+    <div class="card">
         <h5>Lançamentos a Receber</h5>
         <ul>
             <?php
@@ -374,6 +511,11 @@ $saldo = calcularSaldo($pdo);
                         <?= strtoupper($entry['status']) ?>
                     </button>
                     <button 
+                        class="btn-edit"
+                        onclick="openEditModal(<?= $entry['id'] ?>, 'a_receber')">
+                        EDITAR
+                    </button>
+                    <button 
                         class="btn-delete"
                         onclick="deleteLancamento(<?= $entry['id'] ?>, 'a_receber')">
                         EXCLUIR
@@ -384,6 +526,7 @@ $saldo = calcularSaldo($pdo);
         </ul>
     </div>
 
+    <!-- Repita a mesma estrutura para Lançamentos a Pagar -->
     <div class="card">
         <h5>Lançamentos a Pagar</h5>
         <ul>
@@ -403,6 +546,11 @@ $saldo = calcularSaldo($pdo);
                         class="btn-status <?= str_replace(' ', '-', $entry['status']) ?>" 
                         onclick="toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_pagar')">
                         <?= strtoupper($entry['status']) ?>
+                    </button>
+                    <button 
+                        class="btn-edit"
+                        onclick="openEditModal(<?= $entry['id'] ?>, 'a_pagar')">
+                        EDITAR
                     </button>
                     <button 
                         class="btn-delete"
@@ -474,6 +622,79 @@ $saldo = calcularSaldo($pdo);
                 alert('Erro ao excluir o lançamento. Por favor, tente novamente.');
             }
         }
+
+
+        // Modal e funções de edição
+        const modal = document.getElementById('editModal');
+        const editForm = document.getElementById('editForm');
+
+        async function openEditModal(id, table) {
+            try {
+                const formData = new FormData();
+                formData.append('id', id);
+                formData.append('table', table);
+                formData.append('action', 'fetch');
+
+                const response = await fetch('', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao buscar dados');
+                }
+
+                const data = await response.json();
+                
+                document.getElementById('editId').value = data.id;
+                document.getElementById('editTable').value = table;
+                document.getElementById('editDescricao').value = data.descricao;
+                document.getElementById('editValor').value = data.valor.toString().replace('.', ',');
+                document.getElementById('editData').value = data.data;
+
+                modal.style.display = 'block';
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao carregar dados. Por favor, tente novamente.');
+            }
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        editForm.onsubmit = async (e) => {
+            e.preventDefault();
+            
+            try {
+                const formData = new FormData(editForm);
+                formData.append('action', 'edit');
+
+                const response = await fetch('', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao atualizar');
+                }
+
+                location.reload();
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao salvar as alterações. Por favor, tente novamente.');
+            }
+        };
+
+        // Fechar modal quando clicar fora
+        window.onclick = (event) => {
+            if (event.target === modal) {
+                closeModal();
+            }
+        };
+
+        // Fechar modal com o X
+        document.querySelector('.modal-close').onclick = closeModal;
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
