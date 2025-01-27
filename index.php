@@ -70,7 +70,7 @@ require_once 'functions.php';
                     </div>
                     <div class="form-group">
                         <label for="editValor">Valor</label>
-                        <input type="text" id="editValor" name="valor" required>
+                        <input type="text" id="editValor" name="valor" required oninput="formatCurrency(this)">
                     </div>
                     <div class="form-group">
                         <label for="editData">Data</label>
