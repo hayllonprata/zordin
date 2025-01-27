@@ -17,7 +17,7 @@ require_once 'functions.php';
 <body>
     <div class="container">
     <center><img src="logo.png" width="50%" /></center>
-    <h2>Dinheiro com inteligência</h2>
+    <div class="slogan">Dinheiro com inteligência</div>
 
         <!-- Totais do dia -->
         <div class="row">
