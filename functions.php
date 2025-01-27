@@ -110,7 +110,7 @@ class FinancialOperations {
         );
         $pago->execute([':userId' => $this->userId]);
 
-        return $recebido->fetch()['total'] - $pago->fetch()['total'];
+        return $pago->fetch()['total'] - $recebido->fetch()['total'];
     }
 
     public function calcularTotal($table, $filter) {
