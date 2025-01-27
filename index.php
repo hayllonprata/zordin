@@ -499,7 +499,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             </div>
             <div class="form-group">
                 <label for="editValor">Valor</label>
-                <input type="number" id="editValor" name="valor" required step="0.01" min="0">
+                <input type="text" id="editValor" name="valor" required placeholder="0.00" class="form-control">
             </div>
             <div class="form-group">
                 <label for="editData">Data</label>
@@ -704,9 +704,37 @@ editForm.addEventListener('submit', async function(e) {
         const formData = new FormData(editForm);
         formData.append('action', 'edit');
         
-        // Garantir que o valor tem 2 casas decimais
-        const valor = parseFloat(formData.get('valor')).toFixed(2);
-        formData.set('valor', valor);
+        const valorInput = document.getElementById('editValor');
+
+valorInput.addEventListener('input', function(e) {
+    let value = e.target.value;
+    
+    // Remove tudo que não for número
+    value = value.replace(/\D/g, '');
+    
+    // Converte para número e divide por 100 para ter 2 casas decimais
+    const numValue = (parseFloat(value) / 100).toFixed(2);
+    
+    // Se for um número válido, atualiza o valor
+    if (!isNaN(numValue)) {
+        e.target.value = numValue;
+    }
+});
+
+// Impede entrada de caracteres não numéricos
+valorInput.addEventListener('keypress', function(e) {
+    if (!/\d/.test(e.key) && e.key !== 'Backspace' && e.key !== 'Delete') {
+        e.preventDefault();
+    }
+});
+
+// Corrige o valor ao perder o foco
+valorInput.addEventListener('blur', function(e) {
+    const value = e.target.value;
+    if (value) {
+        e.target.value = parseFloat(value).toFixed(2);
+    }
+});
 
         const response = await fetch('', {
             method: 'POST',
