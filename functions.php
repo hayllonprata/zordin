@@ -69,6 +69,22 @@ class FinancialOperations {
         ]);
     }
 
+    public function createLancamento($table, $data) {
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO $table 
+            (descricao, valor, data, status, user_id) 
+            VALUES 
+            (:descricao, :valor, :data, 'nao pago', :userId)"
+        );
+        
+        return $stmt->execute([
+            ':descricao' => $data['descricao'],
+            ':valor' => (float)$data['valor'],
+            ':data' => $data['data'],
+            ':userId' => $this->userId
+        ]);
+    }
+
     public function fetchContas($table, $filter) {
         $stmt = $this->pdo->prepare(
             "SELECT * FROM $table 
@@ -147,6 +163,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 break;
 
+            case 'new':
+                if (isset($_POST['table'], $_POST['descricao'], $_POST['valor'], $_POST['data'])) {
+                    $operations->createLancamento(
+                        $_POST['table'],
+                        [
+                            'descricao' => $_POST['descricao'],
+                            'valor' => (float)$_POST['valor'],
+                            'data' => $_POST['data']
+                        ]
+                    );
+                    $response['success'] = true;
+                }
+                break;
+
             default:
                 if (isset($_POST['id'], $_POST['status'], $_POST['table'])) {
                     $operations->updateStatus((int)$_POST['id'], $_POST['table'], $_POST['status']);
@@ -180,26 +210,4 @@ $totais = [
 ];
 
 $saldo = $operations->calcularSaldo();
-
-
-case 'new':
-    if (isset($_POST['table'], $_POST['descricao'], $_POST['valor'], $_POST['data'])) {
-        $stmt = $pdo->prepare(
-            "INSERT INTO {$_POST['table']} 
-            (descricao, valor, data, status, user_id) 
-            VALUES 
-            (:descricao, :valor, :data, 'nao pago', :userId)"
-        );
-        
-        $stmt->execute([
-            ':descricao' => $_POST['descricao'],
-            ':valor' => (float)$_POST['valor'],
-            ':data' => $_POST['data'],
-            ':userId' => $USER_ID
-        ]);
-        
-        $response['success'] = true;
-    }
-    break;
-
 ?>
