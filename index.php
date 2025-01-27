@@ -75,6 +75,30 @@ $totais = [
 $saldo = calcularSaldo($pdo);
 
 
+// Adicione esta função junto com as outras funções PHP
+function fetchLancamento($pdo, $table, $id) {
+    $stmt = $pdo->prepare("SELECT * FROM $table WHERE id = :id AND user_id = '5511916674140'");
+    $stmt->execute([':id' => $id]);
+    return $stmt->fetch(PDO::FETCH_ASSOC);
+}
+
+// Adicione este bloco junto com os outros blocos de processamento POST
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'fetch') {
+    $id = (int)$_POST['id'];
+    $table = $_POST['table'];
+    
+    try {
+        $lancamento = fetchLancamento($pdo, $table, $id);
+        header('Content-Type: application/json');
+        echo json_encode($lancamento);
+        exit;
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo "Erro ao buscar dados: " . $e->getMessage();
+        exit;
+    }
+}
+
 // Processa a edição
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'edit') {
     $id = (int)$_POST['id'];
@@ -475,7 +499,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 </div>
                 <div class="form-group">
                     <label for="editValor">Valor</label>
-                    <input type="text" id="editValor" name="valor" required>
+                    <!-- No input de valor do modal -->
+<input type="text" id="editValor" name="valor" required 
+       onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 44 || event.charCode === 46">
                 </div>
                 <div class="form-group">
                     <label for="editData">Data</label>
@@ -624,77 +650,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
 
 
-        // Modal e funções de edição
-        const modal = document.getElementById('editModal');
-        const editForm = document.getElementById('editForm');
+async function openEditModal(id, table) {
+    try {
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('table', table);
+        formData.append('action', 'fetch');
 
-        async function openEditModal(id, table) {
-            try {
-                const formData = new FormData();
-                formData.append('id', id);
-                formData.append('table', table);
-                formData.append('action', 'fetch');
+        const response = await fetch('', {
+            method: 'POST',
+            body: formData
+        });
 
-                const response = await fetch('', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    throw new Error('Erro ao buscar dados');
-                }
-
-                const data = await response.json();
-                
-                document.getElementById('editId').value = data.id;
-                document.getElementById('editTable').value = table;
-                document.getElementById('editDescricao').value = data.descricao;
-                document.getElementById('editValor').value = data.valor.toString().replace('.', ',');
-                document.getElementById('editData').value = data.data;
-
-                modal.style.display = 'block';
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro ao carregar dados. Por favor, tente novamente.');
-            }
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        function closeModal() {
-            modal.style.display = 'none';
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            throw new TypeError("Oops, não recebemos JSON!");
         }
 
-        editForm.onsubmit = async (e) => {
-            e.preventDefault();
-            
-            try {
-                const formData = new FormData(editForm);
-                formData.append('action', 'edit');
+        const data = await response.json();
+        if (!data) {
+            throw new Error('Dados não encontrados');
+        }
+        
+        document.getElementById('editId').value = data.id;
+        document.getElementById('editTable').value = table;
+        document.getElementById('editDescricao').value = data.descricao;
+        document.getElementById('editValor').value = Number(data.valor).toLocaleString('pt-BR', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+        document.getElementById('editData').value = data.data;
 
-                const response = await fetch('', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    throw new Error('Erro ao atualizar');
-                }
-
-                location.reload();
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro ao salvar as alterações. Por favor, tente novamente.');
-            }
-        };
-
-        // Fechar modal quando clicar fora
-        window.onclick = (event) => {
-            if (event.target === modal) {
-                closeModal();
-            }
-        };
-
-        // Fechar modal com o X
-        document.querySelector('.modal-close').onclick = closeModal;
+        modal.style.display = 'block';
+    } catch (error) {
+        console.error('Erro detalhado:', error);
+        alert('Erro ao carregar dados. Por favor, tente novamente.');
+    }
+}
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
