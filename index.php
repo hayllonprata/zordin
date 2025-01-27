@@ -11,6 +11,18 @@ try {
     die("Erro na conexão: " . $e->getMessage() . " (" . $e->getCode() . ")");
 }
 
+// Atualiza o status
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'], $_POST['status'], $_POST['table'])) {
+    $id = (int)$_POST['id'];
+    $status = $_POST['status'] === 'pago' ? 'nao pago' : 'pago';
+    $table = $_POST['table'];
+
+    $stmt = $pdo->prepare("UPDATE $table SET status = :status WHERE id = :id");
+    $stmt->execute([':status' => $status, ':id' => $id]);
+    header('Location: ' . $_SERVER['PHP_SELF']);
+    exit;
+}
+
 // funções para buscar dados
 function fetchContas($pdo, $table, $filter) {
     $sql = "SELECT * FROM $table WHERE $filter AND user_id = '5511916674140'";
@@ -82,6 +94,13 @@ $saldo = calcularSaldo($pdo);
         .card ul {
             position: relative;
         }
+        .status-btn {
+            cursor: pointer;
+            color: #ffffff;
+            border: none;
+            background: none;
+            text-transform: uppercase;
+        }
         @media (min-width: 992px) {
             .card {
                 display: block;
@@ -110,8 +129,12 @@ $saldo = calcularSaldo($pdo);
                         <ul>
                             <?php foreach ($dados[$key]['a_receber'] as $receber): ?>
                                 <li>
-                                    <?= $receber['descricao'] ?> - R$ <?= number_format($receber['valor'], 2, ',', '.') ?><?= date('d/m/Y', strtotime($receber['data'])) ?>
-                                    <span class="status"> <?= strtoupper($receber['status']) ?></span>
+                                    <?= $receber['descricao'] ?> - R$ <?= number_format($receber['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($receber['data'])) ?>
+                                    <form method="post" style="display:inline;">
+                                        <input type="hidden" name="id" value="<?= $receber['id'] ?>">
+                                        <input type="hidden" name="table" value="a_receber">
+                                        <button type="submit" class="status-btn"> <?= strtoupper($receber['status']) ?></button>
+                                    </form>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
@@ -123,8 +146,12 @@ $saldo = calcularSaldo($pdo);
                         <ul>
                             <?php foreach ($dados[$key]['a_pagar'] as $pagar): ?>
                                 <li>
-                                    <?= $pagar['descricao'] ?> - R$ <?= number_format($pagar['valor'], 2, ',', '.') ?><?= date('d/m/Y', strtotime($pagar['data'])) ?>
-                                    <span class="status"> <?= strtoupper($pagar['status']) ?></span>
+                                    <?= $pagar['descricao'] ?> - R$ <?= number_format($pagar['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($pagar['data'])) ?>
+                                    <form method="post" style="display:inline;">
+                                        <input type="hidden" name="id" value="<?= $pagar['id'] ?>">
+                                        <input type="hidden" name="table" value="a_pagar">
+                                        <button type="submit" class="status-btn"> <?= strtoupper($pagar['status']) ?></button>
+                                    </form>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
