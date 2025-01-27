@@ -15,6 +15,7 @@ require_once 'functions.php';
     <link href="style.css" rel="stylesheet">
 </head>
 <body>
+<?php echo date('d/m/Y'); ?>
     <div class="container">
         <h1>Zordin - Sistema Financeiro</h1>
 
