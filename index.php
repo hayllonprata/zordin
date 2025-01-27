@@ -13,7 +13,7 @@ try {
 
 // funções para buscar dados
 function fetchContas($pdo, $table, $filter) {
-    $sql = "SELECT * FROM $table WHERE $filter";
+    $sql = "SELECT * FROM $table WHERE $filter AND user_id = 5511916674140";
     $stmt = $pdo->prepare($sql);
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -21,8 +21,8 @@ function fetchContas($pdo, $table, $filter) {
 
 // calcula o saldo
 function calcularSaldo($pdo) {
-    $recebido = $pdo->query("SELECT SUM(valor) as total FROM a_receber WHERE status = 'pago'")->fetch()['total'] ?? 0;
-    $pago = $pdo->query("SELECT SUM(valor) as total FROM a_pagar WHERE status = 'pago'")->fetch()['total'] ?? 0;
+    $recebido = $pdo->query("SELECT SUM(valor) as total FROM a_receber WHERE status = 'pago' AND user_id = 5511916674140")->fetch()['total'] ?? 0;
+    $pago = $pdo->query("SELECT SUM(valor) as total FROM a_pagar WHERE status = 'pago' AND user_id = 5511916674140")->fetch()['total'] ?? 0;
     return $recebido - $pago;
 }
 
@@ -52,7 +52,7 @@ $saldo = calcularSaldo($pdo);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Financeiro</title>
+    <title>Zordin - Dashboard Financeiro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -60,17 +60,20 @@ $saldo = calcularSaldo($pdo);
             color: #ffffff;
         }
         .card {
-            background-color: #1e1e1e;
+            background: linear-gradient(45deg, #1e1e1e, #343434);
             margin-top: 20px;
         }
         .card-receber {
-            background-color: #28a745 !important;
+            background: linear-gradient(45deg, #28a745, #218838) !important;
         }
         .card-pagar {
-            background-color: #dc3545 !important;
+            background: linear-gradient(45deg, #dc3545, #c82333) !important;
         }
         h5, h2, ul li {
             color: #ffffff;
+        }
+        .status {
+            text-align: right;
         }
         @media (min-width: 992px) {
             .card {
@@ -82,7 +85,7 @@ $saldo = calcularSaldo($pdo);
 </head>
 <body>
     <div class="container my-5">
-        <h1 class="text-center">Dashboard Financeiro</h1>
+        <h1 class="text-center">Zordin - Sistema Financeiro</h1>
         <div class="row my-4">
             <div class="col-md-4">
                 <div class="card p-3">
@@ -99,7 +102,10 @@ $saldo = calcularSaldo($pdo);
                         <h5>Contas a Receber - <?= $label ?></h5>
                         <ul>
                             <?php foreach ($dados[$key]['a_receber'] as $receber): ?>
-                                <li><?= $receber['descricao'] ?> - R$ <?= number_format($receber['valor'], 2, ',', '.') ?> - <?= $receber['status'] ?> - <?= date('d/m/Y', strtotime($receber['data'])) ?></li>
+                                <li>
+                                    <?= $receber['descricao'] ?> - R$ <?= number_format($receber['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($receber['data'])) ?>
+                                    <span class="status">- <?= $receber['status'] ?></span>
+                                </li>
                             <?php endforeach; ?>
                         </ul>
                     </div>
@@ -109,7 +115,10 @@ $saldo = calcularSaldo($pdo);
                         <h5>Contas a Pagar - <?= $label ?></h5>
                         <ul>
                             <?php foreach ($dados[$key]['a_pagar'] as $pagar): ?>
-                                <li><?= $pagar['descricao'] ?> - R$ <?= number_format($pagar['valor'], 2, ',', '.') ?> - <?= $pagar['status'] ?> - <?= date('d/m/Y', strtotime($pagar['data'])) ?></li>
+                                <li>
+                                    <?= $pagar['descricao'] ?> - R$ <?= number_format($pagar['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($pagar['data'])) ?>
+                                    <span class="status">- <?= $pagar['status'] ?></span>
+                                </li>
                             <?php endforeach; ?>
                         </ul>
                     </div>
