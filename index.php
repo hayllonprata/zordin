@@ -1,6 +1,3 @@
-<?php
-require_once 'functions.php';
-?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -30,13 +27,13 @@ require_once 'functions.php';
             <div class="col-12">
                 <div class="card card-receber">
                     <h5>Contas a Receber - Hoje</h5>
-                    <h2 class="text-success">R$ <?= number_format($totais['hoje']['a_receber'], 2, ',', '.') ?></h2>
+                    <h2>R$ <?= number_format($totais['hoje']['a_receber'], 2, ',', '.') ?></h2>
                 </div>
             </div>
             <div class="col-12">
                 <div class="card card-pagar">
                     <h5>Contas a Pagar - Hoje</h5>
-                    <h5 class="text-danger">- R$ <?= number_format($totais['hoje']['a_pagar'], 2, ',', '.') ?></h2>
+                    <h2>R$ <?= number_format($totais['hoje']['a_pagar'], 2, ',', '.') ?></h2>
                 </div>
             </div>
         </div>
@@ -52,7 +49,7 @@ require_once 'functions.php';
             <div class="col-12">
                 <div class="card">
                     <h5>Contas a Pagar - Mês</h5>
-                    <h2 class="text-danger">R$ <?= number_format($totais['mes']['a_pagar'], 2, ',', '.') ?></h2>
+                    <h5 class="text-danger">- R$ <?= number_format($totais['mes']['a_pagar'], 2, ',', '.') ?></h2>
                 </div>
             </div>
         </div>
