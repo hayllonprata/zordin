@@ -19,7 +19,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'], $_POST['status'
 
     $stmt = $pdo->prepare("UPDATE $table SET status = :status WHERE id = :id");
     $stmt->execute([':status' => $status, ':id' => $id]);
-    header('Location: ' . $_SERVER['PHP_SELF']);
     exit;
 }
 
@@ -84,22 +83,25 @@ $saldo = calcularSaldo($pdo);
         h5, h2, ul li {
             color: #ffffff;
         }
-        .status {
+        .status-btn {
             text-align: right;
             text-transform: uppercase;
+            border: none;
+            padding: 5px 10px;
+            color: #ffffff;
+            cursor: pointer;
             position: absolute;
             right: 10px;
             top: 10px;
         }
+        .status-btn.nao-pago {
+            background-color: #555;
+        }
+        .status-btn.pago {
+            background-color: #228B22;
+        }
         .card ul {
             position: relative;
-        }
-        .status-btn {
-            cursor: pointer;
-            color: #ffffff;
-            border: none;
-            background: none;
-            text-transform: uppercase;
         }
         @media (min-width: 992px) {
             .card {
@@ -108,6 +110,23 @@ $saldo = calcularSaldo($pdo);
             }
         }
     </style>
+    <script>
+        async function toggleStatus(id, status, table) {
+            const newStatus = status === 'pago' ? 'nao pago' : 'pago';
+            const formData = new FormData();
+            formData.append('id', id);
+            formData.append('status', status);
+            formData.append('table', table);
+
+            await fetch('', {
+                method: 'POST',
+                body: formData
+            });
+
+            document.getElementById(`status-${table}-${id}`).className = `status-btn ${newStatus.replace(' ', '-')}`;
+            document.getElementById(`status-${table}-${id}`).innerText = newStatus.toUpperCase();
+        }
+    </script>
 </head>
 <body>
     <div class="container my-5">
@@ -130,11 +149,12 @@ $saldo = calcularSaldo($pdo);
                             <?php foreach ($dados[$key]['a_receber'] as $receber): ?>
                                 <li>
                                     <?= $receber['descricao'] ?> - R$ <?= number_format($receber['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($receber['data'])) ?>
-                                    <form method="post" style="display:inline;">
-                                        <input type="hidden" name="id" value="<?= $receber['id'] ?>">
-                                        <input type="hidden" name="table" value="a_receber">
-                                        <button type="submit" class="status-btn"> <?= strtoupper($receber['status']) ?></button>
-                                    </form>
+                                    <button 
+                                        id="status-a_receber-<?= $receber['id'] ?>" 
+                                        class="status-btn <?= $receber['status'] ?>" 
+                                        onclick="toggleStatus(<?= $receber['id'] ?>, '<?= $receber['status'] ?>', 'a_receber')">
+                                        <?= strtoupper($receber['status']) ?>
+                                    </button>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
@@ -147,11 +167,12 @@ $saldo = calcularSaldo($pdo);
                             <?php foreach ($dados[$key]['a_pagar'] as $pagar): ?>
                                 <li>
                                     <?= $pagar['descricao'] ?> - R$ <?= number_format($pagar['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($pagar['data'])) ?>
-                                    <form method="post" style="display:inline;">
-                                        <input type="hidden" name="id" value="<?= $pagar['id'] ?>">
-                                        <input type="hidden" name="table" value="a_pagar">
-                                        <button type="submit" class="status-btn"> <?= strtoupper($pagar['status']) ?></button>
-                                    </form>
+                                    <button 
+                                        id="status-a_pagar-<?= $pagar['id'] ?>" 
+                                        class="status-btn <?= $pagar['status'] ?>" 
+                                        onclick="toggleStatus(<?= $pagar['id'] ?>, '<?= $pagar['status'] ?>', 'a_pagar')">
+                                        <?= strtoupper($pagar['status']) ?>
+                                    </button>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
