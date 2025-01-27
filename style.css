@@ -42,7 +42,7 @@ html, body {
 }
 
 .card {
-    background: var(--card-bg);
+    background: linear-gradient(135deg, #1b1b1b, #3a3a3a);
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
