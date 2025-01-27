@@ -195,18 +195,4 @@ public function createLancamento($table, $data) {
         ':userId' => $this->userId
     ]);
 }
-
-case 'new':
-    if (isset($_POST['table'])) {
-        $operations->createLancamento(
-            $_POST['table'],
-            [
-                'descricao' => $_POST['descricao'],
-                'valor' => (float)$_POST['valor'],
-                'data' => $_POST['data']
-            ]
-        );
-        $response['success'] = true;
-    }
-    break;
 ?>

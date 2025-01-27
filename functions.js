@@ -1,202 +1,181 @@
-// Aguarda o DOM estar completamente carregado
-document.addEventListener('DOMContentLoaded', function() {
-    // Inicializa a aplicação
-    initializeApp();
-});
-
-// Função de inicialização principal
-function initializeApp() {
-    // Inicializa os modais
-    initializeModals();
-    
-    // Inicializa os formulários
-    initializeForms();
-    
-    // Inicializa as máscaras de input
-    initializeInputMasks();
+// Função para formatar moeda enquanto digita
+function formatCurrency(input) {
+    let value = input.value.replace(/\D/g, ''); // Remove tudo que não é número
+    value = (parseFloat(value) / 100).toFixed(2); // Converte para decimal
+    value = value.replace('.', ','); // Troca ponto por vírgula
+    value = value.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.'); // Adiciona pontos
+    input.value = value;
 }
 
-// MANIPULAÇÃO DE MODAIS
-// ====================
-
-// Elementos dos modais
-const modals = {
-    edit: {
-        modal: document.getElementById('editModal'),
-        form: document.getElementById('editForm'),
-        closeBtn: document.querySelector('#editModal .modal-close')
-    },
-    new: {
-        modal: document.getElementById('newModal'),
-        form: document.getElementById('newForm'),
-        closeBtn: document.querySelector('#newModal .modal-close')
-    }
-};
-
-function initializeModals() {
-    // Configura os botões de fechar
-    modals.edit.closeBtn?.addEventListener('click', () => closeModal('edit'));
-    modals.new.closeBtn?.addEventListener('click', () => closeModal('new'));
-
-    // Fecha modal ao clicar fora
-    window.onclick = function(event) {
-        if (event.target === modals.edit.modal) closeModal('edit');
-        if (event.target === modals.new.modal) closeModal('new');
-    };
+// Função para converter valor formatado para o formato do banco
+function parseCurrencyToFloat(value) {
+    return parseFloat(value.replace(/\./g, '').replace(',', '.'));
 }
 
-// Funções de Modal de Edição
+// Funções de Modal
+const modal = document.getElementById('editModal');
+const editForm = document.getElementById('editForm');
+const closeModalBtn = document.querySelector('.modal-close');
+const valorInput = document.getElementById('editValor');
+
+// Adiciona a máscara de moeda ao input de valor
+if (valorInput) {
+    valorInput.addEventListener('input', function(e) {
+        formatCurrency(e.target);
+    });
+}
+
+// Função para abrir modal
 async function openEditModal(id, table) {
     try {
-        const response = await fetchData('fetch', { id, table });
-        if (!response) return;
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('table', table);
+        formData.append('action', 'fetch');
 
-        // Preenche o formulário
-        document.getElementById('editId').value = response.id;
+        const response = await fetch('', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        document.getElementById('editId').value = data.id;
         document.getElementById('editTable').value = table;
-        document.getElementById('editDescricao').value = response.descricao;
-        document.getElementById('editValor').value = formatCurrencyForDisplay(response.valor);
-        document.getElementById('editData').value = response.data;
+        document.getElementById('editDescricao').value = data.descricao;
+        
+        // Formata o valor para exibição
+        const valorFormatado = parseFloat(data.valor).toFixed(2).replace('.', ',');
+        document.getElementById('editValor').value = valorFormatado;
+        
+        document.getElementById('editData').value = data.data;
 
-        modals.edit.modal.style.display = 'block';
+        modal.style.display = 'block';
     } catch (error) {
-        handleError('Erro ao carregar dados', error);
+        console.error('Erro:', error);
+        alert('Erro ao carregar dados. Por favor, tente novamente.');
     }
 }
 
-// Funções de Modal Novo Lançamento
-function openNewModal(table) {
-    document.getElementById('newTable').value = table;
-    document.getElementById('newData').value = new Date().toISOString().split('T')[0];
-    document.getElementById('newValor').value = '';
-    document.getElementById('newDescricao').value = '';
-    modals.new.modal.style.display = 'block';
+// Função para fechar modal
+function closeModal() {
+    modal.style.display = 'none';
+    editForm.reset();
 }
 
-function closeModal(type) {
-    modals[type].modal.style.display = 'none';
-    modals[type].form.reset();
+// Evento de click no botão de fechar
+if (closeModalBtn) {
+    closeModalBtn.onclick = closeModal;
 }
 
-// MANIPULAÇÃO DE FORMULÁRIOS
-// =========================
-
-function initializeForms() {
-    // Formulário de edição
-    modals.edit.form?.addEventListener('submit', handleSubmit('edit'));
-    
-    // Formulário novo
-    modals.new.form?.addEventListener('submit', handleSubmit('new'));
+// Fechar modal ao clicar fora
+window.onclick = function(event) {
+    if (event.target == modal) {
+        closeModal();
+    }
 }
 
-function handleSubmit(type) {
-    return async function(e) {
+// Função para atualizar status
+async function toggleStatus(id, status, table) {
+    try {
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('status', status);
+        formData.append('table', table);
+
+        const response = await fetch('', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao atualizar status');
+        }
+
+        location.reload();
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao atualizar o status. Por favor, tente novamente.');
+    }
+}
+
+// Função para deletar lançamento
+async function deleteLancamento(id, table) {
+    if (!confirm('Tem certeza que deseja excluir este lançamento?')) {
+        return;
+    }
+
+    try {
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('table', table);
+        formData.append('action', 'delete');
+
+        const response = await fetch('', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao excluir lançamento');
+        }
+
+        location.reload();
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao excluir o lançamento. Por favor, tente novamente.');
+    }
+}
+
+// Manipulação do formulário de edição
+if (editForm) {
+    editForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        const form = e.target;
         
         try {
-            const formData = new FormData(form);
-            formData.append('action', type);
+            const formData = new FormData(editForm);
+            formData.append('action', 'edit');
             
-            // Processa o valor antes de enviar
+            // Converte o valor formatado para o formato do banco
             let valor = formData.get('valor');
             valor = parseCurrencyToFloat(valor);
             formData.set('valor', valor);
 
-            await fetchData(type, Object.fromEntries(formData));
-            closeModal(type);
+            const response = await fetch('', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao atualizar lançamento');
+            }
+
+            closeModal();
             location.reload();
         } catch (error) {
-            handleError(`Erro ao ${type === 'edit' ? 'atualizar' : 'criar'} lançamento`, error);
+            console.error('Erro:', error);
+            alert('Erro ao atualizar o lançamento. Por favor, tente novamente.');
         }
-    };
-}
-
-// MANIPULAÇÃO DE STATUS E DELEÇÃO
-// ==============================
-
-async function toggleStatus(id, status, table) {
-    try {
-        await fetchData('status', { id, status, table });
-        location.reload();
-    } catch (error) {
-        handleError('Erro ao atualizar status', error);
-    }
-}
-
-async function deleteLancamento(id, table) {
-    if (!confirm('Tem certeza que deseja excluir este lançamento?')) return;
-
-    try {
-        await fetchData('delete', { id, table });
-        location.reload();
-    } catch (error) {
-        handleError('Erro ao excluir lançamento', error);
-    }
-}
-
-// FORMATAÇÃO DE MOEDA
-// ==================
-
-function initializeInputMasks() {
-    // Adiciona máscaras em todos os inputs de valor
-    const valorInputs = document.querySelectorAll('input[name="valor"]');
-    valorInputs.forEach(input => {
-        input.addEventListener('input', handleCurrencyInput);
     });
 }
 
-function handleCurrencyInput(e) {
-    let value = e.target.value.replace(/\D/g, '');
-    if (value === '') {
-        e.target.value = '';
+// Inicialização quando o DOM estiver carregado
+document.addEventListener('DOMContentLoaded', function() {
+    // Verifica se existem elementos necessários
+    if (!modal || !editForm) {
+        console.error('Elementos necessários não encontrados!');
         return;
     }
-    
-    value = (parseInt(value) / 100).toFixed(2);
-    e.target.value = formatCurrencyForDisplay(value);
-}
 
-function formatCurrencyForDisplay(value) {
-    return parseFloat(value)
-        .toFixed(2)
-        .replace('.', ',')
-        .replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-}
-
-function parseCurrencyToFloat(value) {
-    if (!value) return 0;
-    return parseFloat(value.replace(/\./g, '').replace(',', '.'));
-}
-
-// UTILITÁRIOS
-// ===========
-
-async function fetchData(action, data = {}) {
-    const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => formData.append(key, value));
-    
-    if (action !== 'fetch') {
-        formData.append('action', action);
-    }
-
-    const response = await fetch('', {
-        method: 'POST',
-        body: formData
+    // Adiciona máscaras e eventos iniciais
+    const inputs = document.querySelectorAll('input[name="valor"]');
+    inputs.forEach(input => {
+        input.addEventListener('input', function(e) {
+            formatCurrency(e.target);
+        });
     });
-
-    if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    if (action === 'fetch') {
-        return response.json();
-    }
-
-    return true;
-}
-
-function handleError(message, error) {
-    console.error('Erro:', error);
-    alert(`${message}. Por favor, tente novamente.`);
-}
+});

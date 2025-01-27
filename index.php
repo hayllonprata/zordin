@@ -82,43 +82,9 @@ require_once 'functions.php';
             </div>
         </div>
 
-        <!-- Modal de Novo Lançamento -->
-        <div id="newModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5>Novo Lançamento</h5>
-                    <span class="modal-close" onclick="closeNewModal()">&times;</span>
-                </div>
-                <form id="newForm">
-                    <input type="hidden" id="newTable" name="table">
-                    <div class="form-group">
-                        <label for="newDescricao">Descrição</label>
-                        <input type="text" id="newDescricao" name="descricao" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="newValor">Valor</label>
-                        <input type="text" id="newValor" name="valor" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="newData">Data</label>
-                        <input type="date" id="newData" name="data" required>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn-cancel" onclick="closeNewModal()">Cancelar</button>
-                        <button type="submit" class="btn-save">Salvar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
         <!-- Lançamentos a Receber -->
         <div class="card">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h5 class="mb-0">Lançamentos a Receber</h5>
-                <button class="btn-new" onclick="openNewModal('a_receber')">
-                    NOVO LANÇAMENTO
-                </button>
-            </div>
+            <h5>Lançamentos a Receber</h5>
             <ul>
                 <?php
                 $aReceberEntries = $operations->fetchContas('a_receber', "data BETWEEN '$inicioMes' AND '$hoje'");
