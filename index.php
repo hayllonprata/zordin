@@ -124,10 +124,10 @@ $saldo = calcularSaldo($pdo);
             margin-left: auto;
         }
         .card-lancamentos-receber {
-            border: 1px solid #28a745 !important;
+            border: 1px solid #fff !important;
         }
         .card-lancamentos-pagar {
-            border: 1px solid #dc3545 !important;
+            border: 1px solid #fff !important;
         }
         @media (min-width: 992px) {
             .card {
