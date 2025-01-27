@@ -16,7 +16,7 @@ require_once 'functions.php';
 </head>
 <body>
     <div class="container">
-    <img src="logo.png" width="80%" />
+    <center><img src="logo.png" width="50%" /></center>
     <h1>Vida Financeira</h1>
 
         <!-- Totais do dia -->
