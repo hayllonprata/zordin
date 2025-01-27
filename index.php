@@ -79,6 +79,7 @@ $saldo = calcularSaldo($pdo);
             color: var(--text-color);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             min-height: 100vh;
+            background-color: #000;
         }
 
         .container {
