@@ -1,11 +1,9 @@
 <?php
 // conexão com o banco de dados postgres
-$dsn = 'pgsql:host=databases_zordin;port=5432;dbname=databases';
-$user = 'postgres';
-$password = '55081546289173748df1';
+$dsn = 'pgsql:postgres://postgres:55081546289173748df1@easypanel.zord.com.br:5432/databases';
 
 try {
-    $pdo = new PDO($dsn, $user, $password);
+    $pdo = new PDO($dsn);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     die("Erro na conexão: " . $e->getMessage() . " (" . $e->getCode() . ")");
@@ -62,6 +60,15 @@ $saldo = calcularSaldo($pdo);
         .card {
             background-color: #1e1e1e;
         }
+        .card-receber {
+            background-color: #28a745 !important;
+        }
+        .card-pagar {
+            background-color: #dc3545 !important;
+        }
+        h5, h2, ul li {
+            color: #ffffff;
+        }
     </style>
 </head>
 <body>
@@ -79,7 +86,7 @@ $saldo = calcularSaldo($pdo);
         <div class="row my-4">
             <?php foreach (['hoje' => 'Hoje', 'semana' => 'Semana', 'mes' => 'Mês'] as $key => $label): ?>
                 <div class="col-md-4">
-                    <div class="card p-3">
+                    <div class="card card-receber p-3">
                         <h5>Contas a Receber - <?= $label ?></h5>
                         <ul>
                             <?php foreach ($dados[$key]['a_receber'] as $receber): ?>
@@ -89,7 +96,7 @@ $saldo = calcularSaldo($pdo);
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="card p-3">
+                    <div class="card card-pagar p-3">
                         <h5>Contas a Pagar - <?= $label ?></h5>
                         <ul>
                             <?php foreach ($dados[$key]['a_pagar'] as $pagar): ?>
