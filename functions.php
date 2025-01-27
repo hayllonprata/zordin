@@ -89,7 +89,7 @@ class FinancialOperations {
         $stmt = $this->pdo->prepare(
             "SELECT * FROM $table 
             WHERE $filter AND user_id = :userId 
-            ORDER BY data ASC"
+            ORDER BY data ASC, id ASC"
         );
         $stmt->execute([':userId' => $this->userId]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
