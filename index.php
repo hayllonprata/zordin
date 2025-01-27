@@ -483,7 +483,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             </div>
         </div>
 
- <!-- Adicione este modal logo antes do script no final do seu HTML -->
+ <!-- Modal HTML -->
 <div id="editModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -499,7 +499,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             </div>
             <div class="form-group">
                 <label for="editValor">Valor</label>
-                <input type="text" id="editValor" name="valor" required pattern="[0-9]*[,.]?[0-9]{0,2}">
+                <input type="text" id="editValor" name="valor" required 
+                       placeholder="0.00" 
+                       pattern="^\d*\.?\d{0,2}$">
             </div>
             <div class="form-group">
                 <label for="editData">Data</label>
@@ -647,11 +649,13 @@ async function deleteLancamento(id, table) {
     }
 }
 
-// Modal e Edição
+// Modal e elementos do formulário
 const modal = document.getElementById('editModal');
 const closeBtn = document.querySelector('.modal-close');
 const editForm = document.getElementById('editForm');
+const valorInput = document.getElementById('editValor');
 
+// Funções básicas do modal
 function closeModal() {
     modal.style.display = 'none';
 }
@@ -664,14 +668,26 @@ window.onclick = function(event) {
     }
 }
 
-// Função para formatar valor em moeda
-function formatMoney(value) {
-    if (!value) return '0,00';
-    return Number(value).toLocaleString('pt-BR', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
-}
+// Formatação do input de valor
+valorInput.addEventListener('input', function(e) {
+    let value = e.target.value;
+    
+    // Remove tudo que não for número ou ponto
+    value = value.replace(/[^\d.]/g, '');
+    
+    // Garante apenas um ponto decimal
+    const parts = value.split('.');
+    if (parts.length > 2) {
+        value = parts[0] + '.' + parts.slice(1).join('');
+    }
+    
+    // Limita a duas casas decimais
+    if (parts.length > 1 && parts[1].length > 2) {
+        value = parts[0] + '.' + parts[1].slice(0, 2);
+    }
+    
+    e.target.value = value;
+});
 
 // Função para abrir o modal de edição
 async function openEditModal(id, table) {
@@ -695,7 +711,8 @@ async function openEditModal(id, table) {
         document.getElementById('editId').value = data.id;
         document.getElementById('editTable').value = table;
         document.getElementById('editDescricao').value = data.descricao;
-        document.getElementById('editValor').value = formatMoney(data.valor);
+        // Formata o valor para exibir sempre com 2 casas decimais
+        document.getElementById('editValor').value = Number(data.valor).toFixed(2);
         document.getElementById('editData').value = data.data;
 
         modal.style.display = 'block';
@@ -705,17 +722,6 @@ async function openEditModal(id, table) {
     }
 }
 
-// Formatação do campo de valor
-document.getElementById('editValor').addEventListener('input', function(e) {
-    let value = e.target.value.replace(/\D/g, '');
-    if (value === '') {
-        e.target.value = '';
-        return;
-    }
-    value = (parseFloat(value) / 100).toFixed(2);
-    e.target.value = formatMoney(value);
-});
-
 // Tratamento do envio do formulário
 editForm.addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -724,10 +730,12 @@ editForm.addEventListener('submit', async function(e) {
         const formData = new FormData(editForm);
         formData.append('action', 'edit');
         
-        // Formata o valor para o formato do banco
+        // Garante que o valor está no formato correto (999.00)
         let valor = formData.get('valor');
-        valor = valor.replace(/\./g, '').replace(',', '.');
-        formData.set('valor', valor);
+        if (valor) {
+            valor = parseFloat(valor).toFixed(2);
+            formData.set('valor', valor);
+        }
 
         const response = await fetch('', {
             method: 'POST',
@@ -745,6 +753,58 @@ editForm.addEventListener('submit', async function(e) {
         alert('Erro ao atualizar o lançamento. Por favor, tente novamente.');
     }
 });
+
+// Funções existentes de status e delete
+async function toggleStatus(id, status, table) {
+    try {
+        const newStatus = status === 'pago' ? 'nao pago' : 'pago';
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('status', status);
+        formData.append('table', table);
+
+        const response = await fetch('', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao atualizar status');
+        }
+
+        location.reload();
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao atualizar o status. Por favor, tente novamente.');
+    }
+}
+
+async function deleteLancamento(id, table) {
+    if (!confirm('Tem certeza que deseja excluir este lançamento?')) {
+        return;
+    }
+
+    try {
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('table', table);
+        formData.append('action', 'delete');
+
+        const response = await fetch('', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao excluir lançamento');
+        }
+
+        location.reload();
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao excluir o lançamento. Por favor, tente novamente.');
+    }
+}
 </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
