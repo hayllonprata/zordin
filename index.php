@@ -110,7 +110,7 @@ $saldo = calcularSaldo($pdo);
             color: #ffffff;
         }
         .btn-status.nao-pago {
-            background-color: #dc3545;
+            background-color: red;
             color: #ffffff;
         }
         @media (min-width: 992px) {
@@ -168,21 +168,39 @@ $saldo = calcularSaldo($pdo);
             <?php endforeach; ?>
             <div class="col-12">
                 <div class="card new-card p-3">
-                    <h5>Todos os Lançamentos</h5>
+                    <h5>Lançamentos a Receber</h5>
                     <ul>
                         <?php
-                        $allEntries = array_merge(
-                            fetchContas($pdo, 'a_receber', "data BETWEEN '$inicioMes' AND '$hoje'"),
-                            fetchContas($pdo, 'a_pagar', "data BETWEEN '$inicioMes' AND '$hoje'")
-                        );
-                        foreach ($allEntries as $entry):
+                        $aReceberEntries = fetchContas($pdo, 'a_receber', "data BETWEEN '$inicioMes' AND '$hoje'");
+                        foreach ($aReceberEntries as $entry):
                         ?>
                         <li>
                             <span><?= $entry['descricao'] ?> - R$ <?= number_format($entry['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($entry['data'])) ?></span>
                             <button 
-                                id="status-<?= $entry['id'] ?>" 
+                                id="status-a_receber-<?= $entry['id'] ?>" 
                                 class="btn btn-status <?= $entry['status'] ?>" 
-                                onclick="toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', '<?= $entry['status'] === 'pago' ? 'a_receber' : 'a_pagar' ?>')">
+                                onclick="toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_receber')">
+                                <?= strtoupper($entry['status']) ?>
+                            </button>
+                        </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card new-card p-3">
+                    <h5>Lançamentos a Pagar</h5>
+                    <ul>
+                        <?php
+                        $aPagarEntries = fetchContas($pdo, 'a_pagar', "data BETWEEN '$inicioMes' AND '$hoje'");
+                        foreach ($aPagarEntries as $entry):
+                        ?>
+                        <li>
+                            <span><?= $entry['descricao'] ?> - R$ <?= number_format($entry['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($entry['data'])) ?></span>
+                            <button 
+                                id="status-a_pagar-<?= $entry['id'] ?>" 
+                                class="btn btn-status <?= $entry['status'] ?>" 
+                                onclick="toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_pagar')">
                                 <?= strtoupper($entry['status']) ?>
                             </button>
                         </li>
