@@ -132,8 +132,8 @@ require_once 'functions.php';
             <h5>Lançamentos a Receber</h5>
             <ul>
                 <?php
-                $aReceberEntries = $operations->fetchContas('a_receber', "data BETWEEN '$inicioMes' AND '$hoje'");
-                foreach ($aReceberEntries as $entry):
+                 $aReceberEntries = $operations->fetchContas('a_receber', "data BETWEEN '$inicioMes' AND '$fimMes'");
+                 foreach ($aReceberEntries as $entry):
                 ?>
                 <li>
                     <div class="content-wrapper">
@@ -169,7 +169,7 @@ require_once 'functions.php';
             <h5>Lançamentos a Pagar</h5>
             <ul>
                 <?php
-                $aPagarEntries = $operations->fetchContas('a_pagar', "data BETWEEN '$inicioMes' AND '$hoje'");
+                $aPagarEntries = $operations->fetchContas('a_pagar', "data BETWEEN '$inicioMes' AND '$fimMes'");
                 foreach ($aPagarEntries as $entry):
                 ?>
                 <li>
