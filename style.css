@@ -14,9 +14,21 @@ html, body {
     min-height: 100vh;
 }
 
+.logo-container {
+    background-image: url('logo.png'); /* Define a imagem da logo como fundo */
+    background-repeat: no-repeat; /* Impede que a imagem se repita */
+    background-position: center; /* Centraliza a imagem na div */
+    background-size: contain; /* Ajusta a imagem para caber no container */
+    width: 200px; /* Largura da div */
+    height: 200px; /* Altura da div */
+    margin: 0 auto; /* Centraliza horizontalmente */
+    display: block; /* Garante que a div seja exibida como bloco */
+  }
+
+  
 .slogan{
     margin: 15px auto 15px auto;
-    font-size: 1.5rem;
+    font-size: 1.50000rem;
     text-align: center;
     font-style: italic;
 }
