@@ -257,16 +257,56 @@ $saldo = calcularSaldo($pdo);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
 
-        .btn-status {
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
-            transition: all 0.2s ease;
+        .buttons-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            min-width: 120px; /* Largura fixa para todos os botões */
         }
 
-        .btn-status:hover {
+        .btn-status {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-status.pago {
+            background: linear-gradient(135deg, #3CB770, #4BDC87);
+            color: white;
+            box-shadow: 0 2px 4px rgba(60, 183, 112, 0.2);
+        }
+
+        .btn-status.nao-pago {
+            background: linear-gradient(135deg, #c17a7a, #b36e6e);
+            color: white;
+            box-shadow: 0 2px 4px rgba(193, 122, 122, 0.2);
+        }
+
+        .btn-delete {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            border: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: #333;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #444;
             transform: translateY(-1px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
