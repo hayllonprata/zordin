@@ -68,6 +68,12 @@ html, body {
     background: linear-gradient(135deg, #e06155, #c9815b);
     border: 1px solid rgba(193, 122, 122, 0.2);
 }
+.negative{
+    color: #e06155;
+}
+.positive{
+    color: #3ab96b;
+}
 
 /* Typography */
 h1 {

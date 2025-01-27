@@ -40,13 +40,13 @@ require_once 'functions.php';
             <div class="col-12">
                 <div class="card">
                     <h5>Recebimentos do Mês</h5>
-                    <h2 class="text-success">R$ <?= number_format($totais['mes']['a_receber'], 2, ',', '.') ?></h2>
+                    <h2 class="positive">R$ <?= number_format($totais['mes']['a_receber'], 2, ',', '.') ?></h2>
                 </div>
             </div>
             <div class="col-12">
                 <div class="card">
                     <h5>Pagamentos do Mês</h5>
-                    <h4 class="text-danger"> R$ <?= number_format($totais['mes']['a_pagar'], 2, ',', '.') ?></h2>
+                    <h4 class="negative"> R$ <?= number_format($totais['mes']['a_pagar'], 2, ',', '.') ?></h2>
                 </div>
             </div>
         </div>
