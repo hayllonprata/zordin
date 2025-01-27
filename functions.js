@@ -1,4 +1,3 @@
-// Functions.js
 // Função para formatar moeda enquanto digita
 function formatCurrency(input) {
     let value = input.value.replace(/\D/g, ''); // Remove tudo que não é número
@@ -18,10 +17,10 @@ function parseCurrencyToFloat(value) {
     return parseFloat(value.replace(/\./g, '').replace(',', '.'));
 }
 
-// Funções de Modal
+// Inicialização dos elementos do modal
 const modal = document.getElementById('editModal');
 const editForm = document.getElementById('editForm');
-const closeModalBtn = document.querySelector('.modal-close');
+const closeModalBtn = modal ? modal.querySelector('.modal-close') : null;
 const valorInput = document.getElementById('editValor');
 const newModal = document.getElementById('newModal');
 const newForm = document.getElementById('newForm');
@@ -39,12 +38,13 @@ const newValorInput = document.getElementById('newValor');
 // Função para abrir modal de edição
 async function openEditModal(id, table) {
     try {
+        console.log('Abrindo modal para:', id, table); // Debug log
         const formData = new FormData();
         formData.append('id', id);
         formData.append('table', table);
         formData.append('action', 'fetch');
 
-        const response = await fetch('', {
+        const response = await fetch(window.location.href, {
             method: 'POST',
             body: formData
         });
@@ -79,21 +79,27 @@ async function openEditModal(id, table) {
 
 // Função para abrir modal de novo lançamento
 function openNewModal() {
-    newModal.style.display = 'block';
-    document.getElementById('newData').value = new Date().toISOString().split('T')[0];
-    document.getElementById('newValor').value = '0,00';
+    if (newModal) {
+        newModal.style.display = 'block';
+        document.getElementById('newData').value = new Date().toISOString().split('T')[0];
+        document.getElementById('newValor').value = '0,00';
+    }
 }
 
 // Função para fechar modal de edição
 function closeModal() {
-    modal.style.display = 'none';
-    editForm.reset();
+    if (modal) {
+        modal.style.display = 'none';
+        editForm.reset();
+    }
 }
 
 // Função para fechar modal de novo lançamento
 function closeNewModal() {
-    newModal.style.display = 'none';
-    newForm.reset();
+    if (newModal) {
+        newModal.style.display = 'none';
+        newForm.reset();
+    }
 }
 
 // Eventos de click nos botões de fechar
@@ -119,7 +125,7 @@ async function toggleStatus(id, status, table) {
         formData.append('status', status);
         formData.append('table', table);
 
-        const response = await fetch('', {
+        const response = await fetch(window.location.href, {
             method: 'POST',
             body: formData
         });
@@ -147,7 +153,7 @@ async function deleteLancamento(id, table) {
         formData.append('table', table);
         formData.append('action', 'delete');
 
-        const response = await fetch('', {
+        const response = await fetch(window.location.href, {
             method: 'POST',
             body: formData
         });
@@ -177,7 +183,7 @@ if (editForm) {
             valor = parseCurrencyToFloat(valor);
             formData.set('valor', valor);
 
-            const response = await fetch('', {
+            const response = await fetch(window.location.href, {
                 method: 'POST',
                 body: formData
             });
@@ -209,7 +215,7 @@ if (newForm) {
             valor = parseCurrencyToFloat(valor);
             formData.set('valor', valor);
 
-            const response = await fetch('', {
+            const response = await fetch(window.location.href, {
                 method: 'POST',
                 body: formData
             });
@@ -229,17 +235,13 @@ if (newForm) {
 
 // Inicialização quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function() {
-    // Verifica se existem elementos necessários
-    if (!modal || !editForm || !newModal || !newForm) {
-        console.error('Elementos necessários não encontrados!');
-        return;
-    }
-
     // Adiciona máscaras e eventos iniciais
     const inputs = document.querySelectorAll('input[name="valor"]');
     inputs.forEach(input => {
-        input.addEventListener('input', function(e) {
-            formatCurrency(e.target);
-        });
+        if (input) {
+            input.addEventListener('input', function(e) {
+                formatCurrency(e.target);
+            });
+        }
     });
 });
