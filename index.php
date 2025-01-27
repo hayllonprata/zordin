@@ -1,208 +1,231 @@
 <?php
-require_once 'functions.php';
+// Database configuration
+$config = [
+    'host' => 'databases_zordin',
+    'port' => '5432',
+    'dbname' => 'databases',
+    'user' => 'postgres',
+    'password' => '55081546289173748df1'
+];
+
+// Database connection
+function connectDB($config) {
+    try {
+        $dsn = "pgsql:host={$config['host']};port={$config['port']};dbname={$config['dbname']}";
+        $pdo = new PDO($dsn, $config['user'], $config['password']);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        return $pdo;
+    } catch (PDOException $e) {
+        die("Erro na conexão: " . $e->getMessage() . " (" . $e->getCode() . ")");
+    }
+}
+
+$pdo = connectDB($config);
+$USER_ID = '5511916674140'; // Constant user ID
+
+// CRUD Operations
+class FinancialOperations {
+    private $pdo;
+    private $userId;
+
+    public function __construct($pdo, $userId) {
+        $this->pdo = $pdo;
+        $this->userId = $userId;
+    }
+
+    public function deleteLancamento($id, $table) {
+        $stmt = $this->pdo->prepare("DELETE FROM $table WHERE id = :id AND user_id = :userId");
+        return $stmt->execute([':id' => $id, ':userId' => $this->userId]);
+    }
+
+    public function updateStatus($id, $table, $status) {
+        $newStatus = $status === 'pago' ? 'nao pago' : 'pago';
+        $stmt = $this->pdo->prepare("UPDATE $table SET status = :status WHERE id = :id AND user_id = :userId");
+        return $stmt->execute([':status' => $newStatus, ':id' => $id, ':userId' => $this->userId]);
+    }
+
+    public function fetchLancamento($table, $id) {
+        $stmt = $this->pdo->prepare("SELECT * FROM $table WHERE id = :id AND user_id = :userId");
+        $stmt->execute([':id' => $id, ':userId' => $this->userId]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function updateLancamento($table, $id, $data) {
+        $stmt = $this->pdo->prepare(
+            "UPDATE $table 
+            SET descricao = :descricao, 
+                valor = :valor, 
+                data = :data 
+            WHERE id = :id AND user_id = :userId"
+        );
+        
+        return $stmt->execute([
+            ':id' => $id,
+            ':descricao' => $data['descricao'],
+            ':valor' => $data['valor'],
+            ':data' => $data['data'],
+            ':userId' => $this->userId
+        ]);
+    }
+
+    public function createLancamento($table, $data) {
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO $table 
+            (descricao, valor, data, status, user_id) 
+            VALUES 
+            (:descricao, :valor, :data, 'nao pago', :userId)"
+        );
+        
+        return $stmt->execute([
+            ':descricao' => $data['descricao'],
+            ':valor' => (float)$data['valor'],
+            ':data' => $data['data'],
+            ':userId' => $this->userId
+        ]);
+    }
+
+    public function fetchContas($table, $filter) {
+        $stmt = $this->pdo->prepare(
+            "SELECT * FROM $table 
+            WHERE $filter AND user_id = :userId 
+            ORDER BY data ASC, id ASC"
+        );
+        $stmt->execute([':userId' => $this->userId]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function calcularSaldo() {
+        $inicioMes = date('Y-m-01');
+        $fimMes = date('Y-m-t');
+        
+        // Calcula total de recebimentos do mês
+        $recebimentos = $this->pdo->prepare(
+            "SELECT COALESCE(SUM(valor), 0) as total 
+            FROM a_receber 
+            WHERE user_id = :userId 
+            AND data BETWEEN :inicio AND :fim"
+        );
+        $recebimentos->execute([
+            ':userId' => $this->userId,
+            ':inicio' => $inicioMes,
+            ':fim' => $fimMes
+        ]);
+        $totalRecebimentos = $recebimentos->fetch()['total'];
+        
+        // Calcula total de pagamentos do mês
+        $pagamentos = $this->pdo->prepare(
+            "SELECT COALESCE(SUM(valor), 0) as total 
+            FROM a_pagar 
+            WHERE user_id = :userId 
+            AND data BETWEEN :inicio AND :fim"
+        );
+        $pagamentos->execute([
+            ':userId' => $this->userId,
+            ':inicio' => $inicioMes,
+            ':fim' => $fimMes
+        ]);
+        $totalPagamentos = $pagamentos->fetch()['total'];
+
+        // Retorna recebimentos - pagamentos
+        return $totalRecebimentos - $totalPagamentos;
+    }
+
+    public function calcularTotal($table, $filter) {
+        $stmt = $this->pdo->prepare(
+            "SELECT COALESCE(SUM(valor), 0) as total 
+            FROM $table 
+            WHERE $filter AND user_id = :userId"
+        );
+        $stmt->execute([':userId' => $this->userId]);
+        return $stmt->fetch()['total'];
+    }
+}
+
+// Initialize operations
+$operations = new FinancialOperations($pdo, $USER_ID);
+
+// Handle POST requests
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $response = ['success' => false, 'message' => ''];
+    
+    try {
+        switch ($_POST['action'] ?? '') {
+            case 'delete':
+                if (isset($_POST['id'], $_POST['table'])) {
+                    $operations->deleteLancamento((int)$_POST['id'], $_POST['table']);
+                    $response['success'] = true;
+                }
+                break;
+
+            case 'fetch':
+                if (isset($_POST['id'], $_POST['table'])) {
+                    $lancamento = $operations->fetchLancamento($_POST['table'], (int)$_POST['id']);
+                    echo json_encode($lancamento);
+                    exit;
+                }
+                break;
+
+            case 'edit':
+                if (isset($_POST['id'], $_POST['table'])) {
+                    $operations->updateLancamento(
+                        $_POST['table'],
+                        (int)$_POST['id'],
+                        [
+                            'descricao' => $_POST['descricao'],
+                            'valor' => (float)$_POST['valor'],
+                            'data' => $_POST['data']
+                        ]
+                    );
+                    $response['success'] = true;
+                }
+                break;
+
+            case 'new':
+                if (isset($_POST['table'], $_POST['descricao'], $_POST['valor'], $_POST['data'])) {
+                    $operations->createLancamento(
+                        $_POST['table'],
+                        [
+                            'descricao' => $_POST['descricao'],
+                            'valor' => (float)$_POST['valor'],
+                            'data' => $_POST['data']
+                        ]
+                    );
+                    $response['success'] = true;
+                }
+                break;
+
+            default:
+                if (isset($_POST['id'], $_POST['status'], $_POST['table'])) {
+                    $operations->updateStatus((int)$_POST['id'], $_POST['table'], $_POST['status']);
+                    $response['success'] = true;
+                }
+        }
+    } catch (Exception $e) {
+        $response['message'] = $e->getMessage();
+        http_response_code(500);
+    }
+
+    if (!empty($response['message']) || isset($_POST['action'])) {
+        echo json_encode($response);
+        exit;
+    }
+}
+
+// Calculate totals for display
+$hoje = date('Y-m-d');
+$inicioMes = date('Y-m-01');
+$fimMes = date('Y-m-t'); // Último dia do mês atual
+
+$totais = [
+    'hoje' => [
+        'a_receber' => $operations->calcularTotal('a_receber', "data = '$hoje'"),
+        'a_pagar' => $operations->calcularTotal('a_pagar', "data = '$hoje'"),
+    ],
+    'mes' => [
+        'a_receber' => $operations->calcularTotal('a_receber', "data BETWEEN '$inicioMes' AND '$fimMes' AND status = 'nao pago'"),
+        'a_pagar' => $operations->calcularTotal('a_pagar', "data BETWEEN '$inicioMes' AND '$fimMes' AND status = 'nao pago'"),
+    ]
+];
+
+$saldo = $operations->calcularSaldo();
 ?>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#000000">
-
-    <title>Zordin - Dashboard Financeiro</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <link href="style.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container">
-        <h1>Zordin - Sistema Financeiro</h1>
-
-        <!-- Totais do dia -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card card-receber">
-                    <h5>Contas a Receber Hoje</h5>
-                    <h2>R$ <?= number_format($totais['hoje']['a_receber'], 2, ',', '.') ?></h2>
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="card card-pagar">
-                    <h5>Contas a Pagar Hoje</h5>
-                    <h2>R$ <?= number_format($totais['hoje']['a_pagar'], 2, ',', '.') ?></h2>
-                </div>
-            </div>
-        </div>
-
-        <!-- Totais do mês -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <h5>Recebimentos do Mês</h5>
-                    <h2 class="text-success">R$ <?= number_format($totais['mes']['a_receber'], 2, ',', '.') ?></h2>
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="card">
-                    <h5>Pagamentos do Mês</h5>
-                    <h4 class="text-danger"> R$ <?= number_format($totais['mes']['a_pagar'], 2, ',', '.') ?></h2>
-                </div>
-            </div>
-        </div>
-
-        <!-- Saldo -->
-        <div class="card">
-            <h5>Saldo Previsto no Mês</h5>
-            <h2 class="text-success">R$ <?= number_format($saldo, 2, ',', '.') ?></h2>
-        </div>
-
-        <!-- Botão Novo Lançamento -->
-        <div class="text-center mb-4">
-            <button type="button" class="btn-new" onclick="window.openNewModal()">NOVO LANÇAMENTO</button>
-        </div>
-
-        <!-- Modal de Edição -->
-        <div id="editModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5>Editar Lançamento</h5>
-                    <span class="modal-close">&times;</span>
-                </div>
-                <form id="editForm">
-                    <input type="hidden" id="editId" name="id">
-                    <input type="hidden" id="editTable" name="table">
-                    <div class="form-group">
-                        <label for="editDescricao">Descrição</label>
-                        <input type="text" id="editDescricao" name="descricao" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editValor">Valor</label>
-                        <input type="text" id="editValor" name="valor" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editData">Data</label>
-                        <input type="date" id="editData" name="data" required>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn-cancel" onclick="window.closeModal()">Cancelar</button>
-                        <button type="submit" class="btn-save">Salvar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Modal de Novo Lançamento -->
-        <div id="newModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5>Novo Lançamento</h5>
-                    <span class="modal-close" onclick="window.closeNewModal()">&times;</span>
-                </div>
-                <form id="newForm">
-                    <div class="form-group">
-                        <label for="newTipo">Tipo</label>
-                        <select id="newTipo" name="table" required>
-                            <option value="a_receber">A Receber</option>
-                            <option value="a_pagar">A Pagar</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="newDescricao">Descrição</label>
-                        <input type="text" id="newDescricao" name="descricao" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="newValor">Valor</label>
-                        <input type="text" id="newValor" name="valor" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="newData">Data</label>
-                        <input type="date" id="newData" name="data" required>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn-cancel" onclick="window.closeNewModal()">Cancelar</button>
-                        <button type="submit" class="btn-save">Salvar</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Lançamentos a Receber -->
-        <div class="card">
-            <h5>Recebimentos</h5>
-            <ul>
-                <?php
-                 $aReceberEntries = $operations->fetchContas('a_receber', "data BETWEEN '$inicioMes' AND '$fimMes'");
-                 foreach ($aReceberEntries as $entry):
-                ?>
-                <li>
-                    <div class="content-wrapper">
-                        <span class="description"><?= htmlspecialchars($entry['descricao']) ?></span>
-                        <span class="valor">R$ <?= number_format($entry['valor'], 2, ',', '.') ?></span>
-                        <span class="date"><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
-                    </div>
-                    <div class="buttons-wrapper">
-                        <button type="button"
-                            id="status-a_receber-<?= $entry['id'] ?>" 
-                            class="btn-status <?= str_replace(' ', '-', $entry['status']) ?>" 
-                            onclick="window.toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_receber')">
-                            <?= strtoupper($entry['status']) ?>
-                        </button>
-                        <button type="button"
-                            class="btn-edit"
-                            onclick="window.openEditModal(<?= $entry['id'] ?>, 'a_receber')">
-                            EDITAR
-                        </button>
-                        <button type="button"
-                            class="btn-delete"
-                            onclick="window.deleteLancamento(<?= $entry['id'] ?>, 'a_receber')">
-                            EXCLUIR
-                        </button>
-                    </div>
-                </li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-
-        <!-- Lançamentos a Pagar -->
-        <div class="card">
-            <h5>Pagamentos</h5>
-            <ul>
-                <?php
-                $aPagarEntries = $operations->fetchContas('a_pagar', "data BETWEEN '$inicioMes' AND '$fimMes'");
-                foreach ($aPagarEntries as $entry):
-                ?>
-                <li>
-                    <div class="content-wrapper">
-                        <span class="description"><?= htmlspecialchars($entry['descricao']) ?></span>
-                        <span class="valor">R$ <?= number_format($entry['valor'], 2, ',', '.') ?></span>
-                        <span class="date"><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
-                    </div>
-                    <div class="buttons-wrapper">
-                        <button type="button"
-                            id="status-a_pagar-<?= $entry['id'] ?>" 
-                            class="btn-status <?= str_replace(' ', '-', $entry['status']) ?>" 
-                            onclick="window.toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_pagar')">
-                            <?= strtoupper($entry['status']) ?>
-                        </button>
-                        <button type="button"
-                            class="btn-edit"
-                            onclick="window.openEditModal(<?= $entry['id'] ?>, 'a_pagar')">
-                            EDITAR
-                        </button>
-                        <button type="button"
-                            class="btn-delete"
-                            onclick="window.deleteLancamento(<?= $entry['id'] ?>, 'a_pagar')">
-                            EXCLUIR
-                        </button>
-                    </div>
-                </li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="functions.js"></script>
-</body>
-</html
