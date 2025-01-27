@@ -15,7 +15,7 @@ require_once 'functions.php';
         <h1>Zordin - Sistema Financeiro</h1>
 
         <!-- Saldo -->
-        <div class="card">
+        <div class="card sucess">
             <h5>Saldo em Conta</h5>
             <h2 class="text-success">R$ <?= number_format($saldo, 2, ',', '.') ?></h2>
         </div>
