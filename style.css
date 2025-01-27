@@ -70,11 +70,13 @@ html, body {
 }
 .negative{
     color: #e06155;
-    font-size: 1.0rem;
+    font-size: 1.2rem;
+    font-weight: bold;
 }
 .positive{
     color: #3ab96b;
-    font-size: 1.3rem;
+    font-size: 1.6rem;
+    font-weight: bold;
 }
 
 /* Typography */
