@@ -67,11 +67,11 @@ $saldo = calcularSaldo($pdo);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-green: #28a745;
+            --pastel-green: #7cb894;
+            --pastel-red: #c17a7a;
             --dark-bg: #121212;
             --card-bg: rgba(23, 23, 23, 0.8);
             --text-color: #FFFFFF;
-            --input-bg: rgba(17, 17, 17, 0.8);
         }
 
         body {
@@ -79,7 +79,6 @@ $saldo = calcularSaldo($pdo);
             color: var(--text-color);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             min-height: 100vh;
-            background-color: #000;
         }
 
         .container {
@@ -96,6 +95,18 @@ $saldo = calcularSaldo($pdo);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 1.5rem;
             margin-bottom: 1rem;
+        }
+
+        /* Card de Recebimentos - Verde Premium */
+        .card-receber {
+            background: linear-gradient(135deg, #2c4c3b, #1a3327);
+            border: 1px solid rgba(124, 184, 148, 0.2);
+        }
+
+        /* Card de Pagamentos - Vermelho Premium */
+        .card-pagar {
+            background: linear-gradient(135deg, #4c2c2c, #331a1a);
+            border: 1px solid rgba(193, 122, 122, 0.2);
         }
 
         h1 {
@@ -131,13 +142,15 @@ $saldo = calcularSaldo($pdo);
         }
 
         .btn-status.pago {
-            background-color: var(--primary-green);
+            background-color: var(--pastel-green);
             color: white;
+            box-shadow: 0 2px 4px rgba(124, 184, 148, 0.2);
         }
 
         .btn-status.nao-pago {
-            background-color: #dc3545;
+            background-color: var(--pastel-red);
             color: white;
+            box-shadow: 0 2px 4px rgba(193, 122, 122, 0.2);
         }
 
         ul {
@@ -155,10 +168,12 @@ $saldo = calcularSaldo($pdo);
             background: rgba(255, 255, 255, 0.05);
             border-radius: 8px;
             transition: background-color 0.2s ease;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
         li:hover {
             background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(255, 255, 255, 0.1);
         }
 
         .content-wrapper {
@@ -178,11 +193,13 @@ $saldo = calcularSaldo($pdo);
             color: var(--text-color);
             font-weight: bold;
             margin-bottom: 0.25rem;
+            font-size: 1.1rem;
         }
 
         .date {
             font-size: 0.875rem;
             color: var(--text-color);
+            opacity: 0.8;
         }
 
         @media (max-width: 768px) {
@@ -199,9 +216,32 @@ $saldo = calcularSaldo($pdo);
                 padding: 1rem;
             }
         }
+
+        /* Efeitos Premium */
+        .card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-status {
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn-status:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 <body>
+    <!-- [Todo o conteúdo HTML permanece igual, apenas atualizando as classes dos cards] -->
     <div class="container">
         <h1>Zordin - Sistema Financeiro</h1>
 
@@ -214,15 +254,31 @@ $saldo = calcularSaldo($pdo);
         <!-- Totais do dia -->
         <div class="row">
             <div class="col-12">
-                <div class="card">
+                <div class="card card-receber">
                     <h5>Contas a Receber - Hoje</h5>
                     <h2>R$ <?= number_format($totais['hoje']['a_receber'], 2, ',', '.') ?></h2>
                 </div>
             </div>
             <div class="col-12">
-                <div class="card">
+                <div class="card card-pagar">
                     <h5>Contas a Pagar - Hoje</h5>
                     <h2>R$ <?= number_format($totais['hoje']['a_pagar'], 2, ',', '.') ?></h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Totais do mês -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card card-receber">
+                    <h5>Contas a Receber - Mês</h5>
+                    <h2>R$ <?= number_format($totais['mes']['a_receber'], 2, ',', '.') ?></h2>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card card-pagar">
+                    <h5>Contas a Pagar - Mês</h5>
+                    <h2>R$ <?= number_format($totais['mes']['a_pagar'], 2, ',', '.') ?></h2>
                 </div>
             </div>
         </div>
@@ -243,8 +299,7 @@ $saldo = calcularSaldo($pdo);
             </div>
         </div>
 
-        <!-- Lançamentos a Receber -->
-        <div class="card">
+   <div class="card">
             <h5>Lançamentos a Receber</h5>
             <ul>
                 <?php
@@ -294,7 +349,7 @@ $saldo = calcularSaldo($pdo);
         </div>
     </div>
 
-    <script>
+  <script>
         async function toggleStatus(id, status, table) {
             try {
                 const newStatus = status === 'pago' ? 'nao pago' : 'pago';
