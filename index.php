@@ -17,7 +17,7 @@ require_once 'functions.php';
 <body>
     <div class="container">
     <center><img src="logo.png" width="50%" /></center>
-    <h1>Vida Financeira</h1>
+    <h2>Inteligência a favor do seu dinheiro</h1>
 
         <!-- Totais do dia -->
         <div class="row">
