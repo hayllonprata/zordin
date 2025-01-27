@@ -38,13 +38,13 @@ require_once 'functions.php';
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <h5>Contas a Receber no Mês</h5>
+                    <h5>Recebimentos do Mês</h5>
                     <h2 class="text-success">R$ <?= number_format($totais['mes']['a_receber'], 2, ',', '.') ?></h2>
                 </div>
             </div>
             <div class="col-12">
                 <div class="card">
-                    <h5>Contas a Pagar no Mês</h5>
+                    <h5>Pagamentos do Mês</h5>
                     <h4 class="text-danger">- R$ <?= number_format($totais['mes']['a_pagar'], 2, ',', '.') ?></h2>
                 </div>
             </div>
@@ -128,7 +128,7 @@ require_once 'functions.php';
 
         <!-- Lançamentos a Receber -->
         <div class="card">
-            <h5>Lançamentos a Receber</h5>
+            <h5>Recebimentos</h5>
             <ul>
                 <?php
                  $aReceberEntries = $operations->fetchContas('a_receber', "data BETWEEN '$inicioMes' AND '$fimMes'");
@@ -165,7 +165,7 @@ require_once 'functions.php';
 
         <!-- Lançamentos a Pagar -->
         <div class="card">
-            <h5>Lançamentos a Pagar</h5>
+            <h5>Pagamentos</h5>
             <ul>
                 <?php
                 $aPagarEntries = $operations->fetchContas('a_pagar', "data BETWEEN '$inicioMes' AND '$fimMes'");
