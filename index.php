@@ -111,7 +111,7 @@ $saldo = calcularSaldo($pdo);
                             <?php foreach ($dados[$key]['a_receber'] as $receber): ?>
                                 <li>
                                     <?= $receber['descricao'] ?> - R$ <?= number_format($receber['valor'], 2, ',', '.') ?><?= date('d/m/Y', strtotime($receber['data'])) ?>
-                                    <span class="status">- <?= strtoupper($receber['status']) ?></span>
+                                    <span class="status"> <?= strtoupper($receber['status']) ?></span>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
@@ -124,7 +124,7 @@ $saldo = calcularSaldo($pdo);
                             <?php foreach ($dados[$key]['a_pagar'] as $pagar): ?>
                                 <li>
                                     <?= $pagar['descricao'] ?> - R$ <?= number_format($pagar['valor'], 2, ',', '.') ?><?= date('d/m/Y', strtotime($pagar['data'])) ?>
-                                    <span class="status">- <?= strtoupper($pagar['status']) ?></span>
+                                    <span class="status"> <?= strtoupper($pagar['status']) ?></span>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
