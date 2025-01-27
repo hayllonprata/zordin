@@ -1,42 +1,3 @@
-// Função para formatar moeda enquanto digita
-function formatCurrency(input) {
-    let value = input.value.replace(/\D/g, ''); // Remove tudo que não é número
-    if (value === '') {
-        input.value = '0,00';
-        return;
-    }
-    value = (parseFloat(value) / 100).toFixed(2); // Converte para decimal
-    value = value.replace('.', ','); // Troca ponto por vírgula
-    value = value.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.'); // Adiciona pontos
-    input.value = value;
-}
-
-// Função para converter valor formatado para o formato do banco
-function parseCurrencyToFloat(value) {
-    if (!value) return 0;
-    return parseFloat(value.replace(/\./g, '').replace(',', '.'));
-}
-
-// Função para abrir modal de novo lançamento
-function openNewModal() {
-    const newModal = document.getElementById('newModal');
-    if (newModal) {
-        newModal.style.display = 'block';
-        document.getElementById('newData').value = new Date().toISOString().split('T')[0];
-        document.getElementById('newValor').value = '0,00';
-    }
-}
-
-// Função para fechar modal de novo lançamento
-function closeNewModal() {
-    const newModal = document.getElementById('newModal');
-    const newForm = document.getElementById('newForm');
-    if (newModal) {
-        newModal.style.display = 'none';
-        if (newForm) newForm.reset();
-    }
-}
-
 // Função para abrir modal de edição
 async function openEditModal(id, table) {
     const modal = document.getElementById('editModal');
@@ -46,26 +7,61 @@ async function openEditModal(id, table) {
     }
 
     try {
-        console.log('Abrindo modal para:', id, table); // Debug log
+        console.log('Iniciando abertura do modal para:', { id, table }); // Debug log
+
         const formData = new FormData();
         formData.append('id', id);
         formData.append('table', table);
         formData.append('action', 'fetch');
 
-        const response = await fetch(window.location.href, {
-            method: 'POST',
-            body: formData
+        // Log dos dados sendo enviados
+        console.log('Dados sendo enviados:', {
+            id: formData.get('id'),
+            table: formData.get('table'),
+            action: formData.get('action')
         });
 
+        const response = await fetch(window.location.href, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'Accept': 'application/json' // Adiciona header específico para JSON
+            }
+        });
+
+        // Log da resposta
+        console.log('Status da resposta:', response.status);
+        console.log('Headers da resposta:', response.headers);
+
         if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Resposta do servidor:', errorText);
             throw new Error(`HTTP error! status: ${response.status}`);
         }
 
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+            console.error('Resposta não é JSON:', contentType);
+            throw new Error('Resposta do servidor não é JSON válido');
+        }
+
         const data = await response.json();
+        console.log('Dados recebidos:', data); // Debug log
+
         if (!data) {
             throw new Error('Dados não encontrados');
         }
         
+        // Atualiza os campos do formulário
+        const fields = ['editId', 'editTable', 'editDescricao', 'editData'];
+        fields.forEach(field => {
+            const element = document.getElementById(field);
+            if (!element) {
+                console.error(`Campo ${field} não encontrado`);
+                return;
+            }
+        });
+
         document.getElementById('editId').value = data.id;
         document.getElementById('editTable').value = table;
         document.getElementById('editDescricao').value = data.descricao;
@@ -79,95 +75,16 @@ async function openEditModal(id, table) {
         
         document.getElementById('editData').value = data.data;
         modal.style.display = 'block';
+
     } catch (error) {
-        console.error('Erro:', error);
-        alert('Erro ao carregar dados. Por favor, tente novamente.');
+        console.error('Erro detalhado:', error);
+        alert('Erro ao carregar dados. Por favor, tente novamente. Detalhes no console.');
     }
 }
 
-// Função para fechar modal de edição
-function closeModal() {
-    const modal = document.getElementById('editModal');
-    const editForm = document.getElementById('editForm');
-    if (modal) {
-        modal.style.display = 'none';
-        if (editForm) editForm.reset();
-    }
-}
-
-// Função para atualizar status
-async function toggleStatus(id, status, table) {
-    try {
-        const formData = new FormData();
-        formData.append('id', id);
-        formData.append('status', status);
-        formData.append('table', table);
-
-        const response = await fetch(window.location.href, {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!response.ok) {
-            throw new Error('Erro ao atualizar status');
-        }
-
-        location.reload();
-    } catch (error) {
-        console.error('Erro:', error);
-        alert('Erro ao atualizar o status. Por favor, tente novamente.');
-    }
-}
-
-// Função para deletar lançamento
-async function deleteLancamento(id, table) {
-    if (!confirm('Tem certeza que deseja excluir este lançamento?')) {
-        return;
-    }
-
-    try {
-        const formData = new FormData();
-        formData.append('id', id);
-        formData.append('table', table);
-        formData.append('action', 'delete');
-
-        const response = await fetch(window.location.href, {
-            method: 'POST',
-            body: formData
-        });
-
-        if (!response.ok) {
-            throw new Error('Erro ao excluir lançamento');
-        }
-
-        location.reload();
-    } catch (error) {
-        console.error('Erro:', error);
-        alert('Erro ao excluir o lançamento. Por favor, tente novamente.');
-    }
-}
-
-// Inicialização quando o DOM estiver carregado
+// Verifica se o PHP está retornando os dados corretamente
 document.addEventListener('DOMContentLoaded', function() {
-    // Event listeners para os botões de fechar modal
-    const closeModalBtn = document.querySelector('.modal-close');
-    if (closeModalBtn) {
-        closeModalBtn.onclick = closeModal;
-    }
-
-    // Fechar modais ao clicar fora
-    window.onclick = function(event) {
-        const modal = document.getElementById('editModal');
-        const newModal = document.getElementById('newModal');
-        if (event.target == modal) {
-            closeModal();
-        }
-        if (event.target == newModal) {
-            closeNewModal();
-        }
-    }
-
-    // Setup dos formulários
+    // Adiciona listener para o formulário de edição
     const editForm = document.getElementById('editForm');
     if (editForm) {
         editForm.addEventListener('submit', async function(e) {
@@ -177,6 +94,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 const formData = new FormData(editForm);
                 formData.append('action', 'edit');
                 
+                // Log dos dados antes do envio
+                console.log('Dados do formulário:', {
+                    id: formData.get('id'),
+                    table: formData.get('table'),
+                    descricao: formData.get('descricao'),
+                    valor: formData.get('valor'),
+                    data: formData.get('data')
+                });
+
                 // Converte o valor formatado para o formato do banco
                 let valor = formData.get('valor');
                 valor = parseCurrencyToFloat(valor);
@@ -188,57 +114,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
 
                 if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('Erro na resposta:', errorText);
                     throw new Error('Erro ao atualizar lançamento');
                 }
 
                 closeModal();
                 location.reload();
             } catch (error) {
-                console.error('Erro:', error);
+                console.error('Erro detalhado:', error);
                 alert('Erro ao atualizar o lançamento. Por favor, tente novamente.');
             }
         });
     }
-
-    const newForm = document.getElementById('newForm');
-    if (newForm) {
-        newForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            try {
-                const formData = new FormData(newForm);
-                formData.append('action', 'new');
-                
-                // Converte o valor formatado para o formato do banco
-                let valor = formData.get('valor');
-                valor = parseCurrencyToFloat(valor);
-                formData.set('valor', valor);
-
-                const response = await fetch(window.location.href, {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    throw new Error('Erro ao criar lançamento');
-                }
-
-                closeNewModal();
-                location.reload();
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro ao criar o lançamento. Por favor, tente novamente.');
-            }
-        });
-    }
-
-    // Adiciona máscaras de moeda aos inputs
-    const inputs = document.querySelectorAll('input[name="valor"]');
-    inputs.forEach(input => {
-        if (input) {
-            input.addEventListener('input', function(e) {
-                formatCurrency(e.target);
-            });
-        }
-    });
 });
