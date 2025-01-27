@@ -59,7 +59,7 @@ html, body {
 
 /* Card de Recebimentos - Verde Premium */
 .card-receber {
-    background: linear-gradient(135deg, #54CAE9, #4CE888);
+    background: linear-gradient(135deg, #3dafcc, #3ab96b);
     border: 1px solid rgba(124, 184, 148, 0.2);
 }
 
