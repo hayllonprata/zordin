@@ -222,8 +222,8 @@ $totais = [
         'a_pagar' => $operations->calcularTotal('a_pagar', "data = '$hoje'"),
     ],
     'mes' => [
-        'a_receber' => $operations->calcularTotal('a_receber', "data BETWEEN '$inicioMes' AND '$fimMes'"),
-        'a_pagar' => $operations->calcularTotal('a_pagar', "data BETWEEN '$inicioMes' AND '$fimMes'"),
+        'a_receber' => $operations->calcularTotal('a_receber', "data BETWEEN '$inicioMes' AND '$fimMes' AND status = 'nao pago'"),
+        'a_pagar' => $operations->calcularTotal('a_pagar', "data BETWEEN '$inicioMes' AND '$fimMes' AND status = 'nao pago'"),
     ]
 ];
 
