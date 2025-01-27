@@ -64,16 +64,23 @@ $saldo = calcularSaldo($pdo);
             margin-top: 20px;
         }
         .card-receber {
-            background: linear-gradient(45deg, #28a745, #218838) !important;
+            background: linear-gradient(45deg, #34eb77, #28a745) !important;
         }
         .card-pagar {
-            background: linear-gradient(45deg, #dc3545, #c82333) !important;
+            background: linear-gradient(45deg, #eb4034, #dc3545) !important;
         }
         h5, h2, ul li {
             color: #ffffff;
         }
         .status {
             text-align: right;
+            text-transform: uppercase;
+            position: absolute;
+            right: 10px;
+            top: 10px;
+        }
+        .card ul {
+            position: relative;
         }
         @media (min-width: 992px) {
             .card {
@@ -104,7 +111,7 @@ $saldo = calcularSaldo($pdo);
                             <?php foreach ($dados[$key]['a_receber'] as $receber): ?>
                                 <li>
                                     <?= $receber['descricao'] ?> - R$ <?= number_format($receber['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($receber['data'])) ?>
-                                    <span class="status">- <?= $receber['status'] ?></span>
+                                    <span class="status">- <?= strtoupper($receber['status']) ?></span>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
@@ -117,7 +124,7 @@ $saldo = calcularSaldo($pdo);
                             <?php foreach ($dados[$key]['a_pagar'] as $pagar): ?>
                                 <li>
                                     <?= $pagar['descricao'] ?> - R$ <?= number_format($pagar['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($pagar['data'])) ?>
-                                    <span class="status">- <?= $pagar['status'] ?></span>
+                                    <span class="status">- <?= strtoupper($pagar['status']) ?></span>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
