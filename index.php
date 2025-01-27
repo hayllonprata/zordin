@@ -52,7 +52,7 @@ require_once 'functions.php';
 
         <!-- Saldo -->
         <div class="card">
-            <h5>Saldo no Mês</h5>
+            <h5>Saldo Previsto no Mês</h5>
             <h2 class="text-success">R$ <?= number_format($saldo, 2, ',', '.') ?></h2>
         </div>
 
