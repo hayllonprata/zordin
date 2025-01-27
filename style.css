@@ -19,8 +19,8 @@ html, body {
     background-repeat: no-repeat; /* Impede que a imagem se repita */
     background-position: center; /* Centraliza a imagem na div */
     background-size: contain; /* Ajusta a imagem para caber no container */
-    width: 200px; /* Largura da div */
-    height: 200px; /* Altura da div */
+    width: 300px; /* Largura da div */
+    height: 100px; /* Altura da div */
     margin: 0 auto; /* Centraliza horizontalmente */
     display: block; /* Garante que a div seja exibida como bloco */
   }
