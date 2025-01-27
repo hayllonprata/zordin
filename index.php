@@ -67,13 +67,12 @@ $saldo = calcularSaldo($pdo);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
-            --pastel-green: #7cb894;
+            --pastel-violet: #8B5CF6;
             --pastel-red: #c17a7a;
             --dark-bg: #121212;
             --card-bg: rgba(23, 23, 23, 0.8);
             --text-color: #FFFFFF;
         }
-
         body {
             background: linear-gradient(135deg, #121212, #1e1e1e);
             color: var(--text-color);
@@ -139,18 +138,25 @@ $saldo = calcularSaldo($pdo);
             border: none;
             transition: all 0.2s ease;
             cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .btn-status.pago {
-            background-color: var(--pastel-green);
+            background: linear-gradient(135deg, #8B5CF6, #7c4ef0);
             color: white;
-            box-shadow: 0 2px 4px rgba(124, 184, 148, 0.2);
+            box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
         }
 
         .btn-status.nao-pago {
-            background-color: var(--pastel-red);
+            background: linear-gradient(135deg, #c17a7a, #b36e6e);
             color: white;
             box-shadow: 0 2px 4px rgba(193, 122, 122, 0.2);
+        }
+
+        .btn-status:hover {
+            transform: translateY(-1px);
+            filter: brightness(1.1);
         }
 
         ul {
