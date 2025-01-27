@@ -42,18 +42,13 @@ function calcularTotal($pdo, $table, $filter) {
     return $pdo->query("SELECT SUM(valor) as total FROM $table WHERE $filter AND user_id = '5511916674140'")->fetch()['total'] ?? 0;
 }
 
-// filtros para dia, semana e mês
+// filtros para dia e mês
 $hoje = date('Y-m-d');
-$inicioSemana = date('Y-m-d', strtotime('monday this week'));
 $inicioMes = date('Y-m-01');
 $totais = [
     'hoje' => [
         'a_receber' => calcularTotal($pdo, 'a_receber', "data = '$hoje'"),
         'a_pagar' => calcularTotal($pdo, 'a_pagar', "data = '$hoje'"),
-    ],
-    'semana' => [
-        'a_receber' => calcularTotal($pdo, 'a_receber', "data BETWEEN '$inicioSemana' AND '$hoje'"),
-        'a_pagar' => calcularTotal($pdo, 'a_pagar', "data BETWEEN '$inicioSemana' AND '$hoje'"),
     ],
     'mes' => [
         'a_receber' => calcularTotal($pdo, 'a_receber', "data BETWEEN '$inicioMes' AND '$hoje'"),
@@ -95,7 +90,7 @@ $saldo = calcularSaldo($pdo);
         .new-card ul li {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             margin-bottom: 10px;
             flex-direction: row;
             padding: 10px;
@@ -104,6 +99,13 @@ $saldo = calcularSaldo($pdo);
         .new-card ul li .content-wrapper {
             flex-grow: 1;
             margin-right: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .new-card ul li .content-wrapper .date {
+            font-size: 0.9em;
+            color: #888;
+            margin-top: 5px;
         }
         .btn-status {
             border: none;
@@ -120,6 +122,12 @@ $saldo = calcularSaldo($pdo);
             background-color: #8B0000 !important;
             color: #ffffff;
             margin-left: auto;
+        }
+        .card-lancamentos-receber {
+            border: 2px solid #28a745 !important;
+        }
+        .card-lancamentos-pagar {
+            border: 2px solid #dc3545 !important;
         }
         @media (min-width: 992px) {
             .card {
@@ -160,7 +168,7 @@ $saldo = calcularSaldo($pdo);
         </div>
 
         <div class="row my-4">
-            <?php foreach (['hoje' => 'Hoje', 'semana' => 'Semana', 'mes' => 'Mês'] as $key => $label): ?>
+            <?php foreach (['hoje' => 'Hoje', 'mes' => 'Mês'] as $key => $label): ?>
                 <div class="col-12">
                     <div class="card card-receber p-3">
                         <h5>Contas a Receber - <?= $label ?></h5>
@@ -175,7 +183,7 @@ $saldo = calcularSaldo($pdo);
                 </div>
             <?php endforeach; ?>
             <div class="col-12">
-                <div class="card new-card p-3">
+                <div class="card new-card p-3 card-lancamentos-receber">
                     <h5>Lançamentos a Receber</h5>
                     <ul>
                         <?php
@@ -184,8 +192,8 @@ $saldo = calcularSaldo($pdo);
                         ?>
                         <li>
                             <div class="content-wrapper">
-                                <span><?= $entry['descricao'] ?></span>
-                                <span><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
+                                <span class="description"><?= $entry['descricao'] ?></span>
+                                <span class="date"><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
                             </div>
                             <button 
                                 id="status-a_receber-<?= $entry['id'] ?>" 
@@ -199,7 +207,7 @@ $saldo = calcularSaldo($pdo);
                 </div>
             </div>
             <div class="col-12">
-                <div class="card new-card p-3">
+                <div class="card new-card p-3 card-lancamentos-pagar">
                     <h5>Lançamentos a Pagar</h5>
                     <ul>
                         <?php
@@ -208,8 +216,8 @@ $saldo = calcularSaldo($pdo);
                         ?>
                         <li>
                             <div class="content-wrapper">
-                                <span><?= $entry['descricao'] ?></span>
-                                <span><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
+                                <span class="description"><?= $entry['descricao'] ?></span>
+                                <span class="date"><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
                             </div>
                             <button 
                                 id="status-a_pagar-<?= $entry['id'] ?>" 
