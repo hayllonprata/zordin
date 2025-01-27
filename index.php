@@ -37,22 +37,27 @@ function calcularSaldo($pdo) {
     return $recebido - $pago;
 }
 
+// calcula os totais
+function calcularTotal($pdo, $table, $filter) {
+    return $pdo->query("SELECT SUM(valor) as total FROM $table WHERE $filter AND user_id = '5511916674140'")->fetch()['total'] ?? 0;
+}
+
 // filtros para dia, semana e mês
 $hoje = date('Y-m-d');
 $inicioSemana = date('Y-m-d', strtotime('monday this week'));
 $inicioMes = date('Y-m-01');
-$dados = [
+$totais = [
     'hoje' => [
-        'a_receber' => fetchContas($pdo, 'a_receber', "data = '$hoje'"),
-        'a_pagar' => fetchContas($pdo, 'a_pagar', "data = '$hoje'"),
+        'a_receber' => calcularTotal($pdo, 'a_receber', "data = '$hoje'"),
+        'a_pagar' => calcularTotal($pdo, 'a_pagar', "data = '$hoje'"),
     ],
     'semana' => [
-        'a_receber' => fetchContas($pdo, 'a_receber', "data BETWEEN '$inicioSemana' AND '$hoje'"),
-        'a_pagar' => fetchContas($pdo, 'a_pagar', "data BETWEEN '$inicioSemana' AND '$hoje'"),
+        'a_receber' => calcularTotal($pdo, 'a_receber', "data BETWEEN '$inicioSemana' AND '$hoje'"),
+        'a_pagar' => calcularTotal($pdo, 'a_pagar', "data BETWEEN '$inicioSemana' AND '$hoje'"),
     ],
     'mes' => [
-        'a_receber' => fetchContas($pdo, 'a_receber', "data BETWEEN '$inicioMes' AND '$hoje'"),
-        'a_pagar' => fetchContas($pdo, 'a_pagar', "data BETWEEN '$inicioMes' AND '$hoje'"),
+        'a_receber' => calcularTotal($pdo, 'a_receber', "data BETWEEN '$inicioMes' AND '$hoje'"),
+        'a_pagar' => calcularTotal($pdo, 'a_pagar', "data BETWEEN '$inicioMes' AND '$hoje'"),
     ]
 ];
 $saldo = calcularSaldo($pdo);
@@ -80,32 +85,8 @@ $saldo = calcularSaldo($pdo);
         .card-pagar {
             background: linear-gradient(45deg, #dc3545, #a62634) !important;
         }
-        h5, h2, ul li {
+        h5, h2 {
             color: #ffffff;
-        }
-        .status-btn {
-            border: none;
-            border-radius: 5px;
-            padding: 5px 10px;
-            color: #ffffff;
-            cursor: pointer;
-            text-transform: uppercase;
-        }
-        .status-btn.nao-pago {
-            background-color: #8B0000;
-        }
-        .status-btn.pago {
-            background-color: #006400;
-        }
-        .card ul {
-            list-style: none;
-            padding: 0;
-        }
-        .card ul li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
         }
         @media (min-width: 992px) {
             .card {
@@ -114,24 +95,6 @@ $saldo = calcularSaldo($pdo);
             }
         }
     </style>
-    <script>
-        async function toggleStatus(id, status, table) {
-            const newStatus = status === 'pago' ? 'nao pago' : 'pago';
-            const formData = new FormData();
-            formData.append('id', id);
-            formData.append('status', status);
-            formData.append('table', table);
-
-            await fetch('', {
-                method: 'POST',
-                body: formData
-            });
-
-            const button = document.getElementById(`status-${table}-${id}`);
-            button.className = `status-btn ${newStatus.replace(' ', '-')}`;
-            button.innerText = newStatus.toUpperCase();
-        }
-    </script>
 </head>
 <body>
     <div class="container my-5">
@@ -150,40 +113,40 @@ $saldo = calcularSaldo($pdo);
                 <div class="col-12">
                     <div class="card card-receber p-3">
                         <h5>Contas a Receber - <?= $label ?></h5>
-                        <ul>
-                            <?php foreach ($dados[$key]['a_receber'] as $receber): ?>
-                                <li>
-                                    <span><?= $receber['descricao'] ?> - R$ <?= number_format($receber['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($receber['data'])) ?></span>
-                                    <button 
-                                        id="status-a_receber-<?= $receber['id'] ?>" 
-                                        class="status-btn <?= $receber['status'] ?>" 
-                                        onclick="toggleStatus(<?= $receber['id'] ?>, '<?= $receber['status'] ?>', 'a_receber')">
-                                        <?= strtoupper($receber['status']) ?>
-                                    </button>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
+                        <h2>R$ <?= number_format($totais[$key]['a_receber'], 2, ',', '.') ?></h2>
                     </div>
                 </div>
                 <div class="col-12">
                     <div class="card card-pagar p-3">
                         <h5>Contas a Pagar - <?= $label ?></h5>
-                        <ul>
-                            <?php foreach ($dados[$key]['a_pagar'] as $pagar): ?>
-                                <li>
-                                    <span><?= $pagar['descricao'] ?> - R$ <?= number_format($pagar['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($pagar['data'])) ?></span>
-                                    <button 
-                                        id="status-a_pagar-<?= $pagar['id'] ?>" 
-                                        class="status-btn <?= $pagar['status'] ?>" 
-                                        onclick="toggleStatus(<?= $pagar['id'] ?>, '<?= $pagar['status'] ?>', 'a_pagar')">
-                                        <?= strtoupper($pagar['status']) ?>
-                                    </button>
-                                </li>
-                            <?php endforeach; ?>
-                        </ul>
+                        <h2>R$ <?= number_format($totais[$key]['a_pagar'], 2, ',', '.') ?></h2>
                     </div>
                 </div>
             <?php endforeach; ?>
+            <div class="col-12">
+                <div class="card new-card p-3">
+                    <h5>Todos os Lançamentos</h5>
+                    <ul>
+                        <?php
+                        $allEntries = array_merge(
+                            fetchContas($pdo, 'a_receber', "data BETWEEN '$inicioMes' AND '$hoje'"),
+                            fetchContas($pdo, 'a_pagar', "data BETWEEN '$inicioMes' AND '$hoje'")
+                        );
+                        foreach ($allEntries as $entry):
+                        ?>
+                        <li>
+                            <span><?= $entry['descricao'] ?> - R$ <?= number_format($entry['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($entry['data'])) ?></span>
+                            <button 
+                                id="status-<?= $entry['id'] ?>" 
+                                class="status-btn <?= $entry['status'] ?>" 
+                                onclick="toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', '<?= $entry['status'] === 'pago' ? 'a_receber' : 'a_pagar' ?>')">
+                                <?= strtoupper($entry['status']) ?>
+                            </button>
+                        </li>
+                        <?php endforeach; ?>
+                    </ul>
+                </div>
+            </div>
         </div>
     </div>
 
