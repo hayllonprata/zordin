@@ -88,6 +88,31 @@ $saldo = calcularSaldo($pdo);
         h5, h2 {
             color: #ffffff;
         }
+        .new-card ul {
+            list-style: none;
+            padding: 0;
+        }
+        .new-card ul li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .btn-status {
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+        .btn-status.pago {
+            background-color: #28a745;
+            color: #ffffff;
+        }
+        .btn-status.nao-pago {
+            background-color: #dc3545;
+            color: #ffffff;
+        }
         @media (min-width: 992px) {
             .card {
                 display: block;
@@ -95,6 +120,24 @@ $saldo = calcularSaldo($pdo);
             }
         }
     </style>
+    <script>
+        async function toggleStatus(id, status, table) {
+            const newStatus = status === 'pago' ? 'nao pago' : 'pago';
+            const formData = new FormData();
+            formData.append('id', id);
+            formData.append('status', status);
+            formData.append('table', table);
+
+            await fetch('', {
+                method: 'POST',
+                body: formData
+            });
+
+            const button = document.getElementById(`status-${table}-${id}`);
+            button.className = `btn btn-status ${newStatus.replace(' ', '-')}`;
+            button.innerText = newStatus.toUpperCase();
+        }
+    </script>
 </head>
 <body>
     <div class="container my-5">
@@ -138,7 +181,7 @@ $saldo = calcularSaldo($pdo);
                             <span><?= $entry['descricao'] ?> - R$ <?= number_format($entry['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($entry['data'])) ?></span>
                             <button 
                                 id="status-<?= $entry['id'] ?>" 
-                                class="status-btn <?= $entry['status'] ?>" 
+                                class="btn btn-status <?= $entry['status'] ?>" 
                                 onclick="toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', '<?= $entry['status'] === 'pago' ? 'a_receber' : 'a_pagar' ?>')">
                                 <?= strtoupper($entry['status']) ?>
                             </button>
