@@ -87,6 +87,7 @@ $saldo = calcularSaldo($pdo);
             text-align: right;
             text-transform: uppercase;
             border: none;
+            border-radius: 5px;
             padding: 5px 10px;
             color: #ffffff;
             cursor: pointer;
@@ -95,10 +96,10 @@ $saldo = calcularSaldo($pdo);
             top: 10px;
         }
         .status-btn.nao-pago {
-            background-color: #555;
+            background-color: #8B0000;
         }
         .status-btn.pago {
-            background-color: #228B22;
+            background-color: #006400;
         }
         .card ul {
             position: relative;
