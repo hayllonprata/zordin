@@ -95,8 +95,9 @@ $saldo = calcularSaldo($pdo);
         .new-card ul li {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-start;
             margin-bottom: 10px;
+            flex-direction: column;
         }
         .btn-status {
             border: none;
@@ -110,7 +111,7 @@ $saldo = calcularSaldo($pdo);
             color: #ffffff;
         }
         .btn-status.nao-pago {
-            background-color: #ff0000;
+            background-color: #ff0000 !important;
             color: #ffffff;
         }
         @media (min-width: 992px) {
@@ -175,7 +176,8 @@ $saldo = calcularSaldo($pdo);
                         foreach ($aReceberEntries as $entry):
                         ?>
                         <li>
-                            <span><?= $entry['descricao'] ?> - R$ <?= number_format($entry['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($entry['data'])) ?></span>
+                            <span><?= $entry['descricao'] ?></span>
+                            <span><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
                             <button 
                                 id="status-a_receber-<?= $entry['id'] ?>" 
                                 class="btn btn-status <?= $entry['status'] ?>" 
@@ -196,7 +198,8 @@ $saldo = calcularSaldo($pdo);
                         foreach ($aPagarEntries as $entry):
                         ?>
                         <li>
-                            <span><?= $entry['descricao'] ?> - R$ <?= number_format($entry['valor'], 2, ',', '.') ?> - <?= date('d/m/Y', strtotime($entry['data'])) ?></span>
+                            <span><?= $entry['descricao'] ?></span>
+                            <span><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
                             <button 
                                 id="status-a_pagar-<?= $entry['id'] ?>" 
                                 class="btn btn-status <?= $entry['status'] ?>" 
