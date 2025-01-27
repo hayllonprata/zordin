@@ -1,3 +1,4 @@
+/* Arquivo style.css */
 :root {
     --primary-purple: #8B5CF6;
     --dark-bg: #0A0A0A;
@@ -269,4 +270,35 @@ li:hover {
     .card {
         padding: 1rem;
     }
+}
+
+.btn-new {
+    background: linear-gradient(135deg, var(--primary-purple), #7c4dff);
+    color: white;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 1rem;
+}
+
+.btn-new:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
+}
+
+select {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--input-bg);
+    color: var(--text-color);
+}
+
+select option {
+    background: var(--dark-bg);
+    color: var(--text-color);
 }

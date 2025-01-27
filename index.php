@@ -1,3 +1,5 @@
+<!-- Arquivo index.php -->
+
 <?php
 require_once 'functions.php';
 ?>
@@ -81,6 +83,47 @@ require_once 'functions.php';
                 </form>
             </div>
         </div>
+
+
+        <!-- Botão Novo Lançamento -->
+<div class="text-center mb-4">
+    <button class="btn-new" onclick="openNewModal()">Novo Lançamento</button>
+</div>
+
+<!-- Modal de Novo Lançamento -->
+<div id="newModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5>Novo Lançamento</h5>
+            <span class="modal-close" onclick="closeNewModal()">&times;</span>
+        </div>
+        <form id="newForm">
+            <div class="form-group">
+                <label for="newTipo">Tipo</label>
+                <select id="newTipo" name="table" required>
+                    <option value="a_receber">A Receber</option>
+                    <option value="a_pagar">A Pagar</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="newDescricao">Descrição</label>
+                <input type="text" id="newDescricao" name="descricao" required>
+            </div>
+            <div class="form-group">
+                <label for="newValor">Valor</label>
+                <input type="text" id="newValor" name="valor" required>
+            </div>
+            <div class="form-group">
+                <label for="newData">Data</label>
+                <input type="date" id="newData" name="data" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeNewModal()">Cancelar</button>
+                <button type="submit" class="btn-save">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
 
         <!-- Lançamentos a Receber -->
         <div class="card">

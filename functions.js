@@ -1,3 +1,4 @@
+// Functions.js
 // Função para formatar moeda enquanto digita
 function formatCurrency(input) {
     let value = input.value.replace(/\D/g, ''); // Remove tudo que não é número
@@ -179,3 +180,59 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+
+// Modal de novo lançamento
+const newModal = document.getElementById('newModal');
+const newForm = document.getElementById('newForm');
+
+function openNewModal() {
+    newModal.style.display = 'block';
+    document.getElementById('newData').value = new Date().toISOString().split('T')[0];
+}
+
+function closeNewModal() {
+    newModal.style.display = 'none';
+    newForm.reset();
+}
+
+// Adicionar manipulação do formulário de novo lançamento
+if (newForm) {
+    newForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        try {
+            const formData = new FormData(newForm);
+            formData.append('action', 'new');
+            
+            // Converte o valor formatado para o formato do banco
+            let valor = formData.get('valor');
+            valor = parseCurrencyToFloat(valor);
+            formData.set('valor', valor);
+
+            const response = await fetch('', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Erro ao criar lançamento');
+            }
+
+            closeNewModal();
+            location.reload();
+        } catch (error) {
+            console.error('Erro:', error);
+            alert('Erro ao criar o lançamento. Por favor, tente novamente.');
+        }
+    });
+}
+
+// Atualizar o evento de click fora do modal
+window.onclick = function(event) {
+    if (event.target == modal) {
+        closeModal();
+    }
+    if (event.target == newModal) {
+        closeNewModal();
+    }
+}

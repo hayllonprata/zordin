@@ -1,4 +1,5 @@
 <?php
+// Arquivo functions.php
 // Database configuration
 $config = [
     'host' => 'databases_zordin',
@@ -179,4 +180,26 @@ $totais = [
 ];
 
 $saldo = $operations->calcularSaldo();
+
+
+case 'new':
+    if (isset($_POST['table'], $_POST['descricao'], $_POST['valor'], $_POST['data'])) {
+        $stmt = $pdo->prepare(
+            "INSERT INTO {$_POST['table']} 
+            (descricao, valor, data, status, user_id) 
+            VALUES 
+            (:descricao, :valor, :data, 'nao pago', :userId)"
+        );
+        
+        $stmt->execute([
+            ':descricao' => $_POST['descricao'],
+            ':valor' => (float)$_POST['valor'],
+            ':data' => $_POST['data'],
+            ':userId' => $USER_ID
+        ]);
+        
+        $response['success'] = true;
+    }
+    break;
+
 ?>
