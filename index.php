@@ -500,8 +500,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 <div class="form-group">
                     <label for="editValor">Valor</label>
                     <!-- No input de valor do modal -->
-<input type="text" id="editValor" name="valor" required 
-       onkeypress="return event.charCode >= 48 && event.charCode <= 57 || event.charCode === 44 || event.charCode === 46">
+                    <input type="text" id="editValor" name="valor" required pattern="[0-9]*[,.]?[0-9]{0,2}">
                 </div>
                 <div class="form-group">
                     <label for="editData">Data</label>
@@ -650,12 +649,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         }
 
 
-async function openEditModal(id, table) {
+// Modal elements
+const modal = document.getElementById('editModal');
+const closeBtn = document.querySelector('.modal-close');
+const editForm = document.getElementById('editForm');
+
+// Close modal function
+function closeModal() {
+    modal.style.display = 'none';
+}
+
+// Close modal when clicking on X
+closeBtn.onclick = closeModal;
+
+// Close modal when clicking outside
+window.onclick = function(event) {
+    if (event.target == modal) {
+        closeModal();
+    }
+}
+
+// Format currency input
+document.getElementById('editValor').addEventListener('input', function(e) {
+    let value = e.target.value.replace(/\D/g, '');
+    value = (parseFloat(value) / 100).toFixed(2);
+    e.target.value = value.replace('.', ',');
+});
+
+// Handle form submission
+editForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
     try {
-        const formData = new FormData();
-        formData.append('id', id);
-        formData.append('table', table);
-        formData.append('action', 'fetch');
+        const formData = new FormData(editForm);
+        formData.append('action', 'edit');
+        
+        // Format valor back to database format
+        let valor = formData.get('valor');
+        valor = valor.replace('.', '').replace(',', '.');
+        formData.set('valor', valor);
 
         const response = await fetch('', {
             method: 'POST',
@@ -663,34 +695,16 @@ async function openEditModal(id, table) {
         });
 
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error('Erro ao atualizar lançamento');
         }
 
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-            throw new TypeError("Oops, não recebemos JSON!");
-        }
-
-        const data = await response.json();
-        if (!data) {
-            throw new Error('Dados não encontrados');
-        }
-        
-        document.getElementById('editId').value = data.id;
-        document.getElementById('editTable').value = table;
-        document.getElementById('editDescricao').value = data.descricao;
-        document.getElementById('editValor').value = Number(data.valor).toLocaleString('pt-BR', {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        });
-        document.getElementById('editData').value = data.data;
-
-        modal.style.display = 'block';
+        closeModal();
+        location.reload();
     } catch (error) {
-        console.error('Erro detalhado:', error);
-        alert('Erro ao carregar dados. Por favor, tente novamente.');
+        console.error('Erro:', error);
+        alert('Erro ao atualizar o lançamento. Por favor, tente novamente.');
     }
-}
+});
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
