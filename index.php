@@ -85,7 +85,7 @@ $saldo = calcularSaldo($pdo);
         .card-pagar {
             background: linear-gradient(45deg, #dc3545, #a62634) !important;
         }
-        h5, h2 {
+        h5, h2, ul li, .new-card h5 {
             color: #ffffff;
         }
         .new-card ul {
