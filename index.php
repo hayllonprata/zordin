@@ -11,6 +11,23 @@ try {
     die("Erro na conexão: " . $e->getMessage() . " (" . $e->getCode() . ")");
 }
 
+
+// Processa a exclusão
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'], $_POST['table'], $_POST['action']) && $_POST['action'] === 'delete') {
+    $id = (int)$_POST['id'];
+    $table = $_POST['table'];
+    
+    try {
+        $stmt = $pdo->prepare("DELETE FROM $table WHERE id = :id AND user_id = '5511916674140'");
+        $stmt->execute([':id' => $id]);
+        exit;
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo "Erro ao excluir: " . $e->getMessage();
+        exit;
+    }
+}
+
 // Atualiza o status
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id'], $_POST['status'], $_POST['table'])) {
     $id = (int)$_POST['id'];
@@ -296,54 +313,66 @@ $saldo = calcularSaldo($pdo);
             </div>
         </div>
 
-   <div class="card">
-            <h5>Lançamentos a Receber</h5>
-            <ul>
-                <?php
-                $aReceberEntries = fetchContas($pdo, 'a_receber', "data BETWEEN '$inicioMes' AND '$hoje'");
-                foreach ($aReceberEntries as $entry):
-                ?>
-                <li>
-                    <div class="content-wrapper">
-                        <span class="description"><?= $entry['descricao'] ?></span>
-                        <span class="valor">R$ <?= number_format($entry['valor'], 2, ',', '.') ?></span>
-                        <span class="date"><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
-                    </div>
+        <div class="card">
+        <h5>Lançamentos a Receber</h5>
+        <ul>
+            <?php
+            $aReceberEntries = fetchContas($pdo, 'a_receber', "data BETWEEN '$inicioMes' AND '$hoje'");
+            foreach ($aReceberEntries as $entry):
+            ?>
+            <li>
+                <div class="content-wrapper">
+                    <span class="description"><?= $entry['descricao'] ?></span>
+                    <span class="valor">R$ <?= number_format($entry['valor'], 2, ',', '.') ?></span>
+                    <span class="date"><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
+                </div>
+                <div class="buttons-wrapper">
                     <button 
                         id="status-a_receber-<?= $entry['id'] ?>" 
                         class="btn-status <?= str_replace(' ', '-', $entry['status']) ?>" 
                         onclick="toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_receber')">
                         <?= strtoupper($entry['status']) ?>
                     </button>
-                </li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
+                    <button 
+                        class="btn-delete"
+                        onclick="deleteLancamento(<?= $entry['id'] ?>, 'a_receber')">
+                        EXCLUIR
+                    </button>
+                </div>
+            </li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
 
-        <!-- Lançamentos a Pagar -->
-        <div class="card">
-            <h5>Lançamentos a Pagar</h5>
-            <ul>
-                <?php
-                $aPagarEntries = fetchContas($pdo, 'a_pagar', "data BETWEEN '$inicioMes' AND '$hoje'");
-                foreach ($aPagarEntries as $entry):
-                ?>
-                <li>
-                    <div class="content-wrapper">
-                        <span class="description"><?= $entry['descricao'] ?></span>
-                        <span class="valor">R$ <?= number_format($entry['valor'], 2, ',', '.') ?></span>
-                        <span class="date"><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
-                    </div>
+    <div class="card">
+        <h5>Lançamentos a Pagar</h5>
+        <ul>
+            <?php
+            $aPagarEntries = fetchContas($pdo, 'a_pagar', "data BETWEEN '$inicioMes' AND '$hoje'");
+            foreach ($aPagarEntries as $entry):
+            ?>
+            <li>
+                <div class="content-wrapper">
+                    <span class="description"><?= $entry['descricao'] ?></span>
+                    <span class="valor">R$ <?= number_format($entry['valor'], 2, ',', '.') ?></span>
+                    <span class="date"><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
+                </div>
+                <div class="buttons-wrapper">
                     <button 
                         id="status-a_pagar-<?= $entry['id'] ?>" 
                         class="btn-status <?= str_replace(' ', '-', $entry['status']) ?>" 
                         onclick="toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_pagar')">
                         <?= strtoupper($entry['status']) ?>
                     </button>
-                </li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
+                    <button 
+                        class="btn-delete"
+                        onclick="deleteLancamento(<?= $entry['id'] ?>, 'a_pagar')">
+                        EXCLUIR
+                    </button>
+                </div>
+            </li>
+            <?php endforeach; ?>
+        </ul>
     </div>
 
   <script>
@@ -375,6 +404,34 @@ $saldo = calcularSaldo($pdo);
             } catch (error) {
                 console.error('Erro:', error);
                 alert('Erro ao atualizar o status. Por favor, tente novamente.');
+            }
+        }
+
+
+        async function deleteLancamento(id, table) {
+            if (!confirm('Tem certeza que deseja excluir este lançamento?')) {
+                return;
+            }
+
+            try {
+                const formData = new FormData();
+                formData.append('id', id);
+                formData.append('table', table);
+                formData.append('action', 'delete');
+
+                const response = await fetch('', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao excluir lançamento');
+                }
+
+                location.reload();
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao excluir o lançamento. Por favor, tente novamente.');
             }
         }
     </script>
