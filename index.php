@@ -15,15 +15,8 @@ require_once 'functions.php';
     <link href="style.css" rel="stylesheet">
 </head>
 <body>
-<?php echo date('d/m/Y'); ?>
     <div class="container">
         <h1>Zordin - Sistema Financeiro</h1>
-
-        <!-- Saldo -->
-        <div class="card">
-            <h5>Saldo em Conta</h5>
-            <h2 class="text-success">R$ <?= number_format($saldo, 2, ',', '.') ?></h2>
-        </div>
 
         <!-- Totais do dia -->
         <div class="row">
@@ -52,9 +45,15 @@ require_once 'functions.php';
             <div class="col-12">
                 <div class="card">
                     <h5>Contas a Pagar - Mês</h5>
-                    <h5 class="text-danger">- R$ <?= number_format($totais['mes']['a_pagar'], 2, ',', '.') ?></h2>
+                    <h4 class="text-danger">- R$ <?= number_format($totais['mes']['a_pagar'], 2, ',', '.') ?></h2>
                 </div>
             </div>
+        </div>
+
+        <!-- Saldo -->
+        <div class="card">
+            <h5>Saldo em Conta</h5>
+            <h2 class="text-success">R$ <?= number_format($saldo, 2, ',', '.') ?></h2>
         </div>
 
         <!-- Botão Novo Lançamento -->
