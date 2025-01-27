@@ -1,5 +1,4 @@
 <?php
-// Arquivo functions.php
 // Database configuration
 $config = [
     'host' => 'databases_zordin',
@@ -96,21 +95,39 @@ class FinancialOperations {
     }
 
     public function calcularSaldo() {
-        $recebido = $this->pdo->prepare(
+        $inicioMes = date('Y-m-01');
+        $fimMes = date('Y-m-t');
+        
+        // Calcula total de recebimentos do mês
+        $recebimentos = $this->pdo->prepare(
             "SELECT COALESCE(SUM(valor), 0) as total 
             FROM a_receber 
-            WHERE user_id = :userId"
+            WHERE user_id = :userId 
+            AND data BETWEEN :inicio AND :fim"
         );
-        $recebido->execute([':userId' => $this->userId]);
+        $recebimentos->execute([
+            ':userId' => $this->userId,
+            ':inicio' => $inicioMes,
+            ':fim' => $fimMes
+        ]);
+        $totalRecebimentos = $recebimentos->fetch()['total'];
         
-        $pago = $this->pdo->prepare(
+        // Calcula total de pagamentos do mês
+        $pagamentos = $this->pdo->prepare(
             "SELECT COALESCE(SUM(valor), 0) as total 
             FROM a_pagar 
-            WHERE user_id = :userId"
+            WHERE user_id = :userId 
+            AND data BETWEEN :inicio AND :fim"
         );
-        $pago->execute([':userId' => $this->userId]);
+        $pagamentos->execute([
+            ':userId' => $this->userId,
+            ':inicio' => $inicioMes,
+            ':fim' => $fimMes
+        ]);
+        $totalPagamentos = $pagamentos->fetch()['total'];
 
-        return $pago->fetch()['total'] - $recebido->fetch()['total'];
+        // Retorna recebimentos - pagamentos
+        return $totalRecebimentos - $totalPagamentos;
     }
 
     public function calcularTotal($table, $filter) {
