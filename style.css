@@ -273,7 +273,7 @@ li:hover {
 }
 
 .btn-new {
-    background: linear-gradient(135deg, var(--primary-purple), #7c4dff);
+    background: linear-gradient(135deg, var(--primary-purple), #015535);
     color: white;
     padding: 0.75rem 2rem;
     border-radius: 8px;
@@ -282,6 +282,7 @@ li:hover {
     cursor: pointer;
     transition: all 0.2s ease;
     margin-bottom: 1rem;
+    width: 100%;
 }
 
 .btn-new:hover {

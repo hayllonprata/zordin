@@ -54,7 +54,7 @@ require_once 'functions.php';
 
         <!-- Botão Novo Lançamento -->
         <div class="text-center mb-4">
-            <button type="button" class="btn-new" onclick="window.openNewModal()">Novo Lançamento</button>
+            <button type="button" class="btn-new" onclick="window.openNewModal()">NOVO LANÇAMENTO</button>
         </div>
 
         <!-- Modal de Edição -->
