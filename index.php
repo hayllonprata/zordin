@@ -95,9 +95,8 @@ $saldo = calcularSaldo($pdo);
         .new-card ul li {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            align-items: center;
             margin-bottom: 10px;
-            flex-direction: column;
         }
         .btn-status {
             border: none;
@@ -111,8 +110,9 @@ $saldo = calcularSaldo($pdo);
             color: #ffffff;
         }
         .btn-status.nao-pago {
-            background-color: #ff0000 !important;
+            background-color: #8B0000; /* Vermelho escuro */
             color: #ffffff;
+            float: right;
         }
         @media (min-width: 992px) {
             .card {
@@ -176,8 +176,10 @@ $saldo = calcularSaldo($pdo);
                         foreach ($aReceberEntries as $entry):
                         ?>
                         <li>
-                            <span><?= $entry['descricao'] ?></span>
-                            <span><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
+                            <div>
+                                <span><?= $entry['descricao'] ?></span>
+                                <span><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
+                            </div>
                             <button 
                                 id="status-a_receber-<?= $entry['id'] ?>" 
                                 class="btn btn-status <?= $entry['status'] ?>" 
@@ -198,8 +200,10 @@ $saldo = calcularSaldo($pdo);
                         foreach ($aPagarEntries as $entry):
                         ?>
                         <li>
-                            <span><?= $entry['descricao'] ?></span>
-                            <span><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
+                            <div>
+                                <span><?= $entry['descricao'] ?></span>
+                                <span><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
+                            </div>
                             <button 
                                 id="status-a_pagar-<?= $entry['id'] ?>" 
                                 class="btn btn-status <?= $entry['status'] ?>" 
