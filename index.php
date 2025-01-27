@@ -483,7 +483,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             </div>
         </div>
 
- <!-- Modal HTML -->
+<!-- Modal HTML permanece o mesmo -->
 <div id="editModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -501,7 +501,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                 <label for="editValor">Valor</label>
                 <input type="text" id="editValor" name="valor" required 
                        placeholder="0.00" 
-                       pattern="^\d*\.?\d{0,2}$">
+                       pattern="^\d*\.?\d{0,2}$"
+                       title="Digite um valor com até duas casas decimais">
             </div>
             <div class="form-group">
                 <label for="editData">Data</label>
@@ -649,13 +650,11 @@ async function deleteLancamento(id, table) {
     }
 }
 
-// Modal e elementos do formulário
 const modal = document.getElementById('editModal');
 const closeBtn = document.querySelector('.modal-close');
 const editForm = document.getElementById('editForm');
 const valorInput = document.getElementById('editValor');
 
-// Funções básicas do modal
 function closeModal() {
     modal.style.display = 'none';
 }
@@ -672,16 +671,16 @@ window.onclick = function(event) {
 valorInput.addEventListener('input', function(e) {
     let value = e.target.value;
     
-    // Remove tudo que não for número ou ponto
+    // Remove qualquer caractere que não seja número ou ponto
     value = value.replace(/[^\d.]/g, '');
     
     // Garante apenas um ponto decimal
-    const parts = value.split('.');
+    let parts = value.split('.');
     if (parts.length > 2) {
         value = parts[0] + '.' + parts.slice(1).join('');
     }
     
-    // Limita a duas casas decimais
+    // Limita a duas casas decimais após o ponto
     if (parts.length > 1 && parts[1].length > 2) {
         value = parts[0] + '.' + parts[1].slice(0, 2);
     }
@@ -711,8 +710,8 @@ async function openEditModal(id, table) {
         document.getElementById('editId').value = data.id;
         document.getElementById('editTable').value = table;
         document.getElementById('editDescricao').value = data.descricao;
-        // Formata o valor para exibir sempre com 2 casas decimais
-        document.getElementById('editValor').value = Number(data.valor).toFixed(2);
+        // Mantém o valor original sem conversão
+        document.getElementById('editValor').value = data.valor;
         document.getElementById('editData').value = data.data;
 
         modal.style.display = 'block';
@@ -730,12 +729,22 @@ editForm.addEventListener('submit', async function(e) {
         const formData = new FormData(editForm);
         formData.append('action', 'edit');
         
-        // Garante que o valor está no formato correto (999.00)
+        // Pega o valor exato digitado
         let valor = formData.get('valor');
-        if (valor) {
-            valor = parseFloat(valor).toFixed(2);
-            formData.set('valor', valor);
+        
+        // Adiciona zeros à direita se necessário
+        if (valor.indexOf('.') === -1) {
+            valor += '.00';
+        } else {
+            const parts = valor.split('.');
+            if (parts[1].length === 0) {
+                valor += '00';
+            } else if (parts[1].length === 1) {
+                valor += '0';
+            }
         }
+        
+        formData.set('valor', valor);
 
         const response = await fetch('', {
             method: 'POST',
@@ -754,7 +763,7 @@ editForm.addEventListener('submit', async function(e) {
     }
 });
 
-// Funções existentes de status e delete
+// Funções existentes de status e delete permanecem as mesmas
 async function toggleStatus(id, status, table) {
     try {
         const newStatus = status === 'pago' ? 'nao pago' : 'pago';
