@@ -483,36 +483,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             </div>
         </div>
 
-  <!-- Modal de Edição -->
-  <div id="editModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5>Editar Lançamento</h5>
-                <span class="modal-close">&times;</span>
-            </div>
-            <form id="editForm">
-                <input type="hidden" id="editId" name="id">
-                <input type="hidden" id="editTable" name="table">
-                <div class="form-group">
-                    <label for="editDescricao">Descrição</label>
-                    <input type="text" id="editDescricao" name="descricao" required>
-                </div>
-                <div class="form-group">
-                    <label for="editValor">Valor</label>
-                    <!-- No input de valor do modal -->
-                    <input type="text" id="editValor" name="valor" required pattern="[0-9]*[,.]?[0-9]{0,2}">
-                </div>
-                <div class="form-group">
-                    <label for="editData">Data</label>
-                    <input type="date" id="editData" name="data" required>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
-                    <button type="submit" class="btn-save">Salvar</button>
-                </div>
-            </form>
+ <!-- Adicione este modal logo antes do script no final do seu HTML -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5>Editar Lançamento</h5>
+            <span class="modal-close">&times;</span>
         </div>
+        <form id="editForm">
+            <input type="hidden" id="editId" name="id">
+            <input type="hidden" id="editTable" name="table">
+            <div class="form-group">
+                <label for="editDescricao">Descrição</label>
+                <input type="text" id="editDescricao" name="descricao" required>
+            </div>
+            <div class="form-group">
+                <label for="editValor">Valor</label>
+                <input type="text" id="editValor" name="valor" required pattern="[0-9]*[,.]?[0-9]{0,2}">
+            </div>
+            <div class="form-group">
+                <label for="editData">Data</label>
+                <input type="date" id="editData" name="data" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                <button type="submit" class="btn-save">Salvar</button>
+            </div>
+        </form>
     </div>
+</div>
 
     <!-- Modificação na estrutura dos botões dentro dos cards -->
     <div class="card">
@@ -588,95 +587,136 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         </ul>
     </div>
 
-  <script>
-        async function toggleStatus(id, status, table) {
-            try {
-                const newStatus = status === 'pago' ? 'nao pago' : 'pago';
-                const formData = new FormData();
-                formData.append('id', id);
-                formData.append('status', status);
-                formData.append('table', table);
+    <script>
+// Funções de Status e Exclusão
+async function toggleStatus(id, status, table) {
+    try {
+        const newStatus = status === 'pago' ? 'nao pago' : 'pago';
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('status', status);
+        formData.append('table', table);
 
-                const response = await fetch('', {
-                    method: 'POST',
-                    body: formData
-                });
+        const response = await fetch('', {
+            method: 'POST',
+            body: formData
+        });
 
-                if (!response.ok) {
-                    throw new Error('Erro ao atualizar status');
-                }
-
-                const button = document.getElementById(`status-${table}-${id}`);
-                if (button) {
-                    button.className = `btn-status ${newStatus.replace(' ', '-')}`;
-                    button.innerText = newStatus.toUpperCase();
-                    button.setAttribute('onclick', `toggleStatus(${id}, '${newStatus}', '${table}')`);
-                }
-
-                location.reload();
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro ao atualizar o status. Por favor, tente novamente.');
-            }
+        if (!response.ok) {
+            throw new Error('Erro ao atualizar status');
         }
 
-
-        async function deleteLancamento(id, table) {
-            if (!confirm('Tem certeza que deseja excluir este lançamento?')) {
-                return;
-            }
-
-            try {
-                const formData = new FormData();
-                formData.append('id', id);
-                formData.append('table', table);
-                formData.append('action', 'delete');
-
-                const response = await fetch('', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (!response.ok) {
-                    throw new Error('Erro ao excluir lançamento');
-                }
-
-                location.reload();
-            } catch (error) {
-                console.error('Erro:', error);
-                alert('Erro ao excluir o lançamento. Por favor, tente novamente.');
-            }
+        const button = document.getElementById(`status-${table}-${id}`);
+        if (button) {
+            button.className = `btn-status ${newStatus.replace(' ', '-')}`;
+            button.innerText = newStatus.toUpperCase();
+            button.setAttribute('onclick', `toggleStatus(${id}, '${newStatus}', '${table}')`);
         }
 
+        location.reload();
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao atualizar o status. Por favor, tente novamente.');
+    }
+}
 
-// Modal elements
+async function deleteLancamento(id, table) {
+    if (!confirm('Tem certeza que deseja excluir este lançamento?')) {
+        return;
+    }
+
+    try {
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('table', table);
+        formData.append('action', 'delete');
+
+        const response = await fetch('', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error('Erro ao excluir lançamento');
+        }
+
+        location.reload();
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao excluir o lançamento. Por favor, tente novamente.');
+    }
+}
+
+// Modal e Edição
 const modal = document.getElementById('editModal');
 const closeBtn = document.querySelector('.modal-close');
 const editForm = document.getElementById('editForm');
 
-// Close modal function
 function closeModal() {
     modal.style.display = 'none';
 }
 
-// Close modal when clicking on X
 closeBtn.onclick = closeModal;
 
-// Close modal when clicking outside
 window.onclick = function(event) {
     if (event.target == modal) {
         closeModal();
     }
 }
 
-// Format currency input
+// Função para formatar valor em moeda
+function formatMoney(value) {
+    if (!value) return '0,00';
+    return Number(value).toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+// Função para abrir o modal de edição
+async function openEditModal(id, table) {
+    try {
+        const formData = new FormData();
+        formData.append('id', id);
+        formData.append('table', table);
+        formData.append('action', 'fetch');
+
+        const response = await fetch('', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        document.getElementById('editId').value = data.id;
+        document.getElementById('editTable').value = table;
+        document.getElementById('editDescricao').value = data.descricao;
+        document.getElementById('editValor').value = formatMoney(data.valor);
+        document.getElementById('editData').value = data.data;
+
+        modal.style.display = 'block';
+    } catch (error) {
+        console.error('Erro:', error);
+        alert('Erro ao carregar dados. Por favor, tente novamente.');
+    }
+}
+
+// Formatação do campo de valor
 document.getElementById('editValor').addEventListener('input', function(e) {
     let value = e.target.value.replace(/\D/g, '');
+    if (value === '') {
+        e.target.value = '';
+        return;
+    }
     value = (parseFloat(value) / 100).toFixed(2);
-    e.target.value = value.replace('.', ',');
+    e.target.value = formatMoney(value);
 });
 
-// Handle form submission
+// Tratamento do envio do formulário
 editForm.addEventListener('submit', async function(e) {
     e.preventDefault();
     
@@ -684,9 +724,9 @@ editForm.addEventListener('submit', async function(e) {
         const formData = new FormData(editForm);
         formData.append('action', 'edit');
         
-        // Format valor back to database format
+        // Formata o valor para o formato do banco
         let valor = formData.get('valor');
-        valor = valor.replace('.', '').replace(',', '.');
+        valor = valor.replace(/\./g, '').replace(',', '.');
         formData.set('valor', valor);
 
         const response = await fetch('', {
@@ -705,7 +745,7 @@ editForm.addEventListener('submit', async function(e) {
         alert('Erro ao atualizar o lançamento. Por favor, tente novamente.');
     }
 });
-    </script>
+</script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
