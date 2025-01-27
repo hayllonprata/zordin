@@ -97,6 +97,13 @@ $saldo = calcularSaldo($pdo);
             justify-content: space-between;
             align-items: center;
             margin-bottom: 10px;
+            flex-direction: row;
+            padding: 10px;
+            position: relative;
+        }
+        .new-card ul li .content-wrapper {
+            flex-grow: 1;
+            margin-right: 15px;
         }
         .btn-status {
             border: none;
@@ -110,9 +117,9 @@ $saldo = calcularSaldo($pdo);
             color: #ffffff;
         }
         .btn-status.nao-pago {
-            background-color: #8B0000; /* Vermelho escuro */
+            background-color: #8B0000 !important;
             color: #ffffff;
-            float: right;
+            margin-left: auto;
         }
         @media (min-width: 992px) {
             .card {
@@ -176,13 +183,13 @@ $saldo = calcularSaldo($pdo);
                         foreach ($aReceberEntries as $entry):
                         ?>
                         <li>
-                            <div>
+                            <div class="content-wrapper">
                                 <span><?= $entry['descricao'] ?></span>
                                 <span><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
                             </div>
                             <button 
                                 id="status-a_receber-<?= $entry['id'] ?>" 
-                                class="btn btn-status <?= $entry['status'] ?>" 
+                                class="btn btn-status <?= str_replace(' ', '-', $entry['status']) ?>" 
                                 onclick="toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_receber')">
                                 <?= strtoupper($entry['status']) ?>
                             </button>
@@ -200,13 +207,13 @@ $saldo = calcularSaldo($pdo);
                         foreach ($aPagarEntries as $entry):
                         ?>
                         <li>
-                            <div>
+                            <div class="content-wrapper">
                                 <span><?= $entry['descricao'] ?></span>
                                 <span><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
                             </div>
                             <button 
                                 id="status-a_pagar-<?= $entry['id'] ?>" 
-                                class="btn btn-status <?= $entry['status'] ?>" 
+                                class="btn btn-status <?= str_replace(' ', '-', $entry['status']) ?>" 
                                 onclick="toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_pagar')">
                                 <?= strtoupper($entry['status']) ?>
                             </button>
