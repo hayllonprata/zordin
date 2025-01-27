@@ -1,9 +1,11 @@
 <?php
 // conexão com o banco de dados postgres
-$dsn = 'pgsql:postgres://postgres:55081546289173748df1@easypanel.zord.com.br:5438/databases';
+$dsn = 'pgsql:host=databases_zordin;port=5432;dbname=databases';
+$user = 'postgres';
+$password = '55081546289173748df1';
 
 try {
-    $pdo = new PDO($dsn);
+    $pdo = new PDO($dsn, $user, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     die("Erro na conexão: " . $e->getMessage() . " (" . $e->getCode() . ")");
