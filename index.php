@@ -46,13 +46,13 @@ require_once 'functions.php';
             <div class="col-12">
                 <div class="card">
                     <h5>Contas a Receber - Mês</h5>
-                    <h2>R$ <?= number_format($totais['mes']['a_receber'], 2, ',', '.') ?></h2>
+                    <h2 class="text-success">R$ <?= number_format($totais['mes']['a_receber'], 2, ',', '.') ?></h2>
                 </div>
             </div>
             <div class="col-12">
                 <div class="card">
                     <h5>Contas a Pagar - Mês</h5>
-                    <h2>R$ <?= number_format($totais['mes']['a_pagar'], 2, ',', '.') ?></h2>
+                    <h2 class="text-danger">R$ <?= number_format($totais['mes']['a_pagar'], 2, ',', '.') ?></h2>
                 </div>
             </div>
         </div>
