@@ -8,7 +8,7 @@ require_once 'functions.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#000000">
 
-    <title>Zordin - Dashboard Financeiro</title>
+    <title>Zordin - Vida Financeira</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -16,7 +16,8 @@ require_once 'functions.php';
 </head>
 <body>
     <div class="container">
-        <h1>Zordin - Sistema Financeiro</h1>
+    <img src="logo.png" width="80%" />
+    <h1>Vida Financeira</h1>
 
         <!-- Totais do dia -->
         <div class="row">
