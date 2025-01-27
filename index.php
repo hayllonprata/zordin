@@ -61,6 +61,7 @@ $saldo = calcularSaldo($pdo);
         }
         .card {
             background-color: #1e1e1e;
+            margin-top: 20px;
         }
         .card-receber {
             background-color: #28a745 !important;
@@ -70,6 +71,12 @@ $saldo = calcularSaldo($pdo);
         }
         h5, h2, ul li {
             color: #ffffff;
+        }
+        @media (min-width: 992px) {
+            .card {
+                display: block;
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -87,22 +94,22 @@ $saldo = calcularSaldo($pdo);
 
         <div class="row my-4">
             <?php foreach (['hoje' => 'Hoje', 'semana' => 'Semana', 'mes' => 'Mês'] as $key => $label): ?>
-                <div class="col-md-4">
+                <div class="col-12">
                     <div class="card card-receber p-3">
                         <h5>Contas a Receber - <?= $label ?></h5>
                         <ul>
                             <?php foreach ($dados[$key]['a_receber'] as $receber): ?>
-                                <li><?= $receber['descricao'] ?> - R$ <?= number_format($receber['valor'], 2, ',', '.') ?> - <?= $receber['status'] ?></li>
+                                <li><?= $receber['descricao'] ?> - R$ <?= number_format($receber['valor'], 2, ',', '.') ?> - <?= $receber['status'] ?> - <?= date('d/m/Y', strtotime($receber['data'])) ?></li>
                             <?php endforeach; ?>
                         </ul>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-12">
                     <div class="card card-pagar p-3">
                         <h5>Contas a Pagar - <?= $label ?></h5>
                         <ul>
                             <?php foreach ($dados[$key]['a_pagar'] as $pagar): ?>
-                                <li><?= $pagar['descricao'] ?> - R$ <?= number_format($pagar['valor'], 2, ',', '.') ?> - <?= $pagar['status'] ?></li>
+                                <li><?= $pagar['descricao'] ?> - R$ <?= number_format($pagar['valor'], 2, ',', '.') ?> - <?= $pagar['status'] ?> - <?= date('d/m/Y', strtotime($pagar['data'])) ?></li>
                             <?php endforeach; ?>
                         </ul>
                     </div>
