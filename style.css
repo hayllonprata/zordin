@@ -70,9 +70,11 @@ html, body {
 }
 .negative{
     color: #e06155;
+    font-size: 1.0rem;
 }
 .positive{
     color: #3ab96b;
+    font-size: 1.3rem;
 }
 
 /* Typography */
