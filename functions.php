@@ -179,20 +179,4 @@ $totais = [
 ];
 
 $saldo = $operations->calcularSaldo();
-
-public function createLancamento($table, $data) {
-    $stmt = $this->pdo->prepare(
-        "INSERT INTO $table 
-        (descricao, valor, data, status, user_id) 
-        VALUES 
-        (:descricao, :valor, :data, 'nao pago', :userId)"
-    );
-    
-    return $stmt->execute([
-        ':descricao' => $data['descricao'],
-        ':valor' => $data['valor'],
-        ':data' => $data['data'],
-        ':userId' => $this->userId
-    ]);
-}
 ?>

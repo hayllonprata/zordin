@@ -121,28 +121,6 @@ li:hover {
     opacity: 0.8;
 }
 
-/* New Button Style */
-.btn-new {
-    background: linear-gradient(135deg, #8B5CF6, #7C3AED);
-    color: white;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    border: none;
-    transition: all 0.2s ease;
-    cursor: pointer;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2);
-}
-
-.btn-new:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
-    background: linear-gradient(135deg, #9061F9, #7C3AED);
-}
-
 /* Button Styles */
 .buttons-wrapper {
     display: flex;
