@@ -67,20 +67,18 @@ $saldo = calcularSaldo($pdo);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-purple: #8B5CF6;
-            --dark-bg: #0A0A0A;
+            --primary-green: #28a745;
+            --dark-bg: #121212;
             --card-bg: rgba(23, 23, 23, 0.8);
-            --text-color: #E5E7EB;
+            --text-color: #FFFFFF;
             --input-bg: rgba(17, 17, 17, 0.8);
         }
 
         body {
-            background-color: var(--dark-bg);
+            background: linear-gradient(135deg, #121212, #1e1e1e);
             color: var(--text-color);
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             min-height: 100vh;
-            background: radial-gradient(ellipse at top, #2D1B69, transparent),
-                        radial-gradient(ellipse at bottom, #1F1B4D, transparent);
         }
 
         .container {
@@ -105,7 +103,6 @@ $saldo = calcularSaldo($pdo);
             color: var(--text-color);
             text-align: center;
             margin-bottom: 3rem;
-            text-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
         }
 
         h2 {
@@ -133,12 +130,12 @@ $saldo = calcularSaldo($pdo);
         }
 
         .btn-status.pago {
-            background-color: var(--primary-purple);
+            background-color: var(--primary-green);
             color: white;
         }
 
         .btn-status.nao-pago {
-            background-color: rgba(220, 53, 69, 0.8);
+            background-color: #dc3545;
             color: white;
         }
 
@@ -170,13 +167,21 @@ $saldo = calcularSaldo($pdo);
 
         .description {
             display: block;
+            color: var(--text-color);
             font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .valor {
+            display: block;
+            color: var(--text-color);
+            font-weight: bold;
             margin-bottom: 0.25rem;
         }
 
         .date {
             font-size: 0.875rem;
-            color: rgba(255, 255, 255, 0.6);
+            color: var(--text-color);
         }
 
         @media (max-width: 768px) {
@@ -248,6 +253,7 @@ $saldo = calcularSaldo($pdo);
                 <li>
                     <div class="content-wrapper">
                         <span class="description"><?= $entry['descricao'] ?></span>
+                        <span class="valor">R$ <?= number_format($entry['valor'], 2, ',', '.') ?></span>
                         <span class="date"><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
                     </div>
                     <button 
@@ -272,6 +278,7 @@ $saldo = calcularSaldo($pdo);
                 <li>
                     <div class="content-wrapper">
                         <span class="description"><?= $entry['descricao'] ?></span>
+                        <span class="valor">R$ <?= number_format($entry['valor'], 2, ',', '.') ?></span>
                         <span class="date"><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
                     </div>
                     <button 
