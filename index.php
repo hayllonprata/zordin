@@ -104,7 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     $id = (int)$_POST['id'];
     $table = $_POST['table'];
     $descricao = $_POST['descricao'];
-    $valor = str_replace(',', '.', str_replace('.', '', $_POST['valor']));
+    $valor = floatval($_POST['valor']); // Convertendo diretamente para float
     $data = $_POST['data'];
 
     try {
@@ -499,10 +499,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             </div>
             <div class="form-group">
                 <label for="editValor">Valor</label>
-                <input type="text" id="editValor" name="valor" required 
-                       placeholder="0.00" 
-                       pattern="^\d*\.?\d{0,2}$"
-                       title="Digite um valor com até duas casas decimais">
+                <input type="number" id="editValor" name="valor" required step="0.01" min="0">
             </div>
             <div class="form-group">
                 <label for="editData">Data</label>
@@ -667,27 +664,6 @@ window.onclick = function(event) {
     }
 }
 
-// Formatação do input de valor
-valorInput.addEventListener('input', function(e) {
-    let value = e.target.value;
-    
-    // Remove qualquer caractere que não seja número ou ponto
-    value = value.replace(/[^\d.]/g, '');
-    
-    // Garante apenas um ponto decimal
-    let parts = value.split('.');
-    if (parts.length > 2) {
-        value = parts[0] + '.' + parts.slice(1).join('');
-    }
-    
-    // Limita a duas casas decimais após o ponto
-    if (parts.length > 1 && parts[1].length > 2) {
-        value = parts[0] + '.' + parts[1].slice(0, 2);
-    }
-    
-    e.target.value = value;
-});
-
 // Função para abrir o modal de edição
 async function openEditModal(id, table) {
     try {
@@ -710,8 +686,7 @@ async function openEditModal(id, table) {
         document.getElementById('editId').value = data.id;
         document.getElementById('editTable').value = table;
         document.getElementById('editDescricao').value = data.descricao;
-        // Mantém o valor original sem conversão
-        document.getElementById('editValor').value = data.valor;
+        document.getElementById('editValor').value = parseFloat(data.valor).toFixed(2);
         document.getElementById('editData').value = data.data;
 
         modal.style.display = 'block';
@@ -729,21 +704,8 @@ editForm.addEventListener('submit', async function(e) {
         const formData = new FormData(editForm);
         formData.append('action', 'edit');
         
-        // Pega o valor exato digitado
-        let valor = formData.get('valor');
-        
-        // Adiciona zeros à direita se necessário
-        if (valor.indexOf('.') === -1) {
-            valor += '.00';
-        } else {
-            const parts = valor.split('.');
-            if (parts[1].length === 0) {
-                valor += '00';
-            } else if (parts[1].length === 1) {
-                valor += '0';
-            }
-        }
-        
+        // Garantir que o valor tem 2 casas decimais
+        const valor = parseFloat(formData.get('valor')).toFixed(2);
         formData.set('valor', valor);
 
         const response = await fetch('', {
