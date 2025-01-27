@@ -270,22 +270,6 @@ $saldo = calcularSaldo($pdo);
         <!-- Totais do mês -->
         <div class="row">
             <div class="col-12">
-                <div class="card card-receber">
-                    <h5>Contas a Receber - Mês</h5>
-                    <h2>R$ <?= number_format($totais['mes']['a_receber'], 2, ',', '.') ?></h2>
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="card card-pagar">
-                    <h5>Contas a Pagar - Mês</h5>
-                    <h2>R$ <?= number_format($totais['mes']['a_pagar'], 2, ',', '.') ?></h2>
-                </div>
-            </div>
-        </div>
-
-        <!-- Totais do mês -->
-        <div class="row">
-            <div class="col-12">
                 <div class="card">
                     <h5>Contas a Receber - Mês</h5>
                     <h2>R$ <?= number_format($totais['mes']['a_receber'], 2, ',', '.') ?></h2>
