@@ -197,6 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // Calculate totals for display
 $hoje = date('Y-m-d');
 $inicioMes = date('Y-m-01');
+$fimMes = date('Y-m-t'); // Último dia do mês atual
 
 $totais = [
     'hoje' => [
@@ -204,8 +205,8 @@ $totais = [
         'a_pagar' => $operations->calcularTotal('a_pagar', "data = '$hoje'"),
     ],
     'mes' => [
-        'a_receber' => $operations->calcularTotal('a_receber', "data BETWEEN '$inicioMes' AND '$hoje'"),
-        'a_pagar' => $operations->calcularTotal('a_pagar', "data BETWEEN '$inicioMes' AND '$hoje'"),
+        'a_receber' => $operations->calcularTotal('a_receber', "data BETWEEN '$inicioMes' AND '$fimMes'"),
+        'a_pagar' => $operations->calcularTotal('a_pagar', "data BETWEEN '$inicioMes' AND '$fimMes'"),
     ]
 ];
 
