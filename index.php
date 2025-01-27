@@ -1,5 +1,3 @@
-<!-- Arquivo index.php -->
-
 <?php
 require_once 'functions.php';
 ?>
@@ -54,6 +52,11 @@ require_once 'functions.php';
             </div>
         </div>
 
+        <!-- Botão Novo Lançamento -->
+        <div class="text-center mb-4">
+            <button type="button" class="btn-new" onclick="window.openNewModal()">Novo Lançamento</button>
+        </div>
+
         <!-- Modal de Edição -->
         <div id="editModal" class="modal">
             <div class="modal-content">
@@ -70,60 +73,54 @@ require_once 'functions.php';
                     </div>
                     <div class="form-group">
                         <label for="editValor">Valor</label>
-                        <input type="text" id="editValor" name="valor" required oninput="formatCurrency(this)">
+                        <input type="text" id="editValor" name="valor" required>
                     </div>
                     <div class="form-group">
                         <label for="editData">Data</label>
                         <input type="date" id="editData" name="data" required>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
+                        <button type="button" class="btn-cancel" onclick="window.closeModal()">Cancelar</button>
                         <button type="submit" class="btn-save">Salvar</button>
                     </div>
                 </form>
             </div>
         </div>
 
-
-        <!-- Botão Novo Lançamento -->
-<div class="text-center mb-4">
-    <button class="btn-new" onclick="openNewModal()">Novo Lançamento</button>
-</div>
-
-<!-- Modal de Novo Lançamento -->
-<div id="newModal" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h5>Novo Lançamento</h5>
-            <span class="modal-close" onclick="closeNewModal()">&times;</span>
+        <!-- Modal de Novo Lançamento -->
+        <div id="newModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5>Novo Lançamento</h5>
+                    <span class="modal-close" onclick="window.closeNewModal()">&times;</span>
+                </div>
+                <form id="newForm">
+                    <div class="form-group">
+                        <label for="newTipo">Tipo</label>
+                        <select id="newTipo" name="table" required>
+                            <option value="a_receber">A Receber</option>
+                            <option value="a_pagar">A Pagar</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="newDescricao">Descrição</label>
+                        <input type="text" id="newDescricao" name="descricao" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newValor">Valor</label>
+                        <input type="text" id="newValor" name="valor" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newData">Data</label>
+                        <input type="date" id="newData" name="data" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-cancel" onclick="window.closeNewModal()">Cancelar</button>
+                        <button type="submit" class="btn-save">Salvar</button>
+                    </div>
+                </form>
+            </div>
         </div>
-        <form id="newForm">
-            <div class="form-group">
-                <label for="newTipo">Tipo</label>
-                <select id="newTipo" name="table" required>
-                    <option value="a_receber">A Receber</option>
-                    <option value="a_pagar">A Pagar</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="newDescricao">Descrição</label>
-                <input type="text" id="newDescricao" name="descricao" required>
-            </div>
-            <div class="form-group">
-                <label for="newValor">Valor</label>
-                <input type="text" id="newValor" name="valor" required>
-            </div>
-            <div class="form-group">
-                <label for="newData">Data</label>
-                <input type="date" id="newData" name="data" required>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-cancel" onclick="closeNewModal()">Cancelar</button>
-                <button type="submit" class="btn-save">Salvar</button>
-            </div>
-        </form>
-    </div>
-</div>
 
         <!-- Lançamentos a Receber -->
         <div class="card">
@@ -140,20 +137,20 @@ require_once 'functions.php';
                         <span class="date"><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
                     </div>
                     <div class="buttons-wrapper">
-                        <button 
+                        <button type="button"
                             id="status-a_receber-<?= $entry['id'] ?>" 
                             class="btn-status <?= str_replace(' ', '-', $entry['status']) ?>" 
-                            onclick="toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_receber')">
+                            onclick="window.toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_receber')">
                             <?= strtoupper($entry['status']) ?>
                         </button>
-                        <button 
+                        <button type="button"
                             class="btn-edit"
-                            onclick="openEditModal(<?= $entry['id'] ?>, 'a_receber')">
+                            onclick="window.openEditModal(<?= $entry['id'] ?>, 'a_receber')">
                             EDITAR
                         </button>
-                        <button 
+                        <button type="button"
                             class="btn-delete"
-                            onclick="deleteLancamento(<?= $entry['id'] ?>, 'a_receber')">
+                            onclick="window.deleteLancamento(<?= $entry['id'] ?>, 'a_receber')">
                             EXCLUIR
                         </button>
                     </div>
@@ -177,20 +174,20 @@ require_once 'functions.php';
                         <span class="date"><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
                     </div>
                     <div class="buttons-wrapper">
-                        <button 
+                        <button type="button"
                             id="status-a_pagar-<?= $entry['id'] ?>" 
                             class="btn-status <?= str_replace(' ', '-', $entry['status']) ?>" 
-                            onclick="toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_pagar')">
+                            onclick="window.toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_pagar')">
                             <?= strtoupper($entry['status']) ?>
                         </button>
-                        <button 
+                        <button type="button"
                             class="btn-edit"
-                            onclick="openEditModal(<?= $entry['id'] ?>, 'a_pagar')">
+                            onclick="window.openEditModal(<?= $entry['id'] ?>, 'a_pagar')">
                             EDITAR
                         </button>
-                        <button 
+                        <button type="button"
                             class="btn-delete"
-                            onclick="deleteLancamento(<?= $entry['id'] ?>, 'a_pagar')">
+                            onclick="window.deleteLancamento(<?= $entry['id'] ?>, 'a_pagar')">
                             EXCLUIR
                         </button>
                     </div>
@@ -204,4 +201,4 @@ require_once 'functions.php';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="functions.js"></script>
 </body>
-</html>
+</html
