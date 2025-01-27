@@ -124,10 +124,10 @@ $saldo = calcularSaldo($pdo);
             margin-left: auto;
         }
         .card-lancamentos-receber {
-            border: 2px solid #28a745 !important;
+            border: 1px solid #28a745 !important;
         }
         .card-lancamentos-pagar {
-            border: 2px solid #dc3545 !important;
+            border: 1px solid #dc3545 !important;
         }
         @media (min-width: 992px) {
             .card {
@@ -138,20 +138,35 @@ $saldo = calcularSaldo($pdo);
     </style>
     <script>
         async function toggleStatus(id, status, table) {
-            const newStatus = status === 'pago' ? 'nao pago' : 'pago';
-            const formData = new FormData();
-            formData.append('id', id);
-            formData.append('status', status);
-            formData.append('table', table);
+            try {
+                const newStatus = status === 'pago' ? 'nao pago' : 'pago';
+                const formData = new FormData();
+                formData.append('id', id);
+                formData.append('status', status);
+                formData.append('table', table);
 
-            await fetch('', {
-                method: 'POST',
-                body: formData
-            });
+                const response = await fetch('', {
+                    method: 'POST',
+                    body: formData
+                });
 
-            const button = document.getElementById(`status-${table}-${id}`);
-            button.className = `btn btn-status ${newStatus.replace(' ', '-')}`;
-            button.innerText = newStatus.toUpperCase();
+                if (!response.ok) {
+                    throw new Error('Erro ao atualizar status');
+                }
+
+                const button = document.getElementById(`status-${table}-${id}`);
+                if (button) {
+                    button.className = `btn btn-status ${newStatus.replace(' ', '-')}`;
+                    button.innerText = newStatus.toUpperCase();
+                    button.setAttribute('onclick', `toggleStatus(${id}, '${newStatus}', '${table}')`);
+                }
+
+                // Recarrega a página para atualizar os totais
+                location.reload();
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao atualizar o status. Por favor, tente novamente.');
+            }
         }
     </script>
 </head>
