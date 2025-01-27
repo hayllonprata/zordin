@@ -17,26 +17,34 @@ function parseCurrencyToFloat(value) {
     return parseFloat(value.replace(/\./g, '').replace(',', '.'));
 }
 
-// Inicialização dos elementos do modal
-const modal = document.getElementById('editModal');
-const editForm = document.getElementById('editForm');
-const closeModalBtn = modal ? modal.querySelector('.modal-close') : null;
-const valorInput = document.getElementById('editValor');
-const newModal = document.getElementById('newModal');
-const newForm = document.getElementById('newForm');
-const newValorInput = document.getElementById('newValor');
-
-// Adiciona a máscara de moeda aos inputs de valor
-[valorInput, newValorInput].forEach(input => {
-    if (input) {
-        input.addEventListener('input', function(e) {
-            formatCurrency(e.target);
-        });
+// Função para abrir modal de novo lançamento
+function openNewModal() {
+    const newModal = document.getElementById('newModal');
+    if (newModal) {
+        newModal.style.display = 'block';
+        document.getElementById('newData').value = new Date().toISOString().split('T')[0];
+        document.getElementById('newValor').value = '0,00';
     }
-});
+}
+
+// Função para fechar modal de novo lançamento
+function closeNewModal() {
+    const newModal = document.getElementById('newModal');
+    const newForm = document.getElementById('newForm');
+    if (newModal) {
+        newModal.style.display = 'none';
+        if (newForm) newForm.reset();
+    }
+}
 
 // Função para abrir modal de edição
 async function openEditModal(id, table) {
+    const modal = document.getElementById('editModal');
+    if (!modal) {
+        console.error('Modal não encontrado');
+        return;
+    }
+
     try {
         console.log('Abrindo modal para:', id, table); // Debug log
         const formData = new FormData();
@@ -77,43 +85,13 @@ async function openEditModal(id, table) {
     }
 }
 
-// Função para abrir modal de novo lançamento
-function openNewModal() {
-    if (newModal) {
-        newModal.style.display = 'block';
-        document.getElementById('newData').value = new Date().toISOString().split('T')[0];
-        document.getElementById('newValor').value = '0,00';
-    }
-}
-
 // Função para fechar modal de edição
 function closeModal() {
+    const modal = document.getElementById('editModal');
+    const editForm = document.getElementById('editForm');
     if (modal) {
         modal.style.display = 'none';
-        editForm.reset();
-    }
-}
-
-// Função para fechar modal de novo lançamento
-function closeNewModal() {
-    if (newModal) {
-        newModal.style.display = 'none';
-        newForm.reset();
-    }
-}
-
-// Eventos de click nos botões de fechar
-if (closeModalBtn) {
-    closeModalBtn.onclick = closeModal;
-}
-
-// Fechar modais ao clicar fora
-window.onclick = function(event) {
-    if (event.target == modal) {
-        closeModal();
-    }
-    if (event.target == newModal) {
-        closeNewModal();
+        if (editForm) editForm.reset();
     }
 }
 
@@ -169,73 +147,92 @@ async function deleteLancamento(id, table) {
     }
 }
 
-// Manipulação do formulário de edição
-if (editForm) {
-    editForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        try {
-            const formData = new FormData(editForm);
-            formData.append('action', 'edit');
-            
-            // Converte o valor formatado para o formato do banco
-            let valor = formData.get('valor');
-            valor = parseCurrencyToFloat(valor);
-            formData.set('valor', valor);
-
-            const response = await fetch(window.location.href, {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                throw new Error('Erro ao atualizar lançamento');
-            }
-
-            closeModal();
-            location.reload();
-        } catch (error) {
-            console.error('Erro:', error);
-            alert('Erro ao atualizar o lançamento. Por favor, tente novamente.');
-        }
-    });
-}
-
-// Manipulação do formulário de novo lançamento
-if (newForm) {
-    newForm.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        
-        try {
-            const formData = new FormData(newForm);
-            formData.append('action', 'new');
-            
-            // Converte o valor formatado para o formato do banco
-            let valor = formData.get('valor');
-            valor = parseCurrencyToFloat(valor);
-            formData.set('valor', valor);
-
-            const response = await fetch(window.location.href, {
-                method: 'POST',
-                body: formData
-            });
-
-            if (!response.ok) {
-                throw new Error('Erro ao criar lançamento');
-            }
-
-            closeNewModal();
-            location.reload();
-        } catch (error) {
-            console.error('Erro:', error);
-            alert('Erro ao criar o lançamento. Por favor, tente novamente.');
-        }
-    });
-}
-
 // Inicialização quando o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function() {
-    // Adiciona máscaras e eventos iniciais
+    // Event listeners para os botões de fechar modal
+    const closeModalBtn = document.querySelector('.modal-close');
+    if (closeModalBtn) {
+        closeModalBtn.onclick = closeModal;
+    }
+
+    // Fechar modais ao clicar fora
+    window.onclick = function(event) {
+        const modal = document.getElementById('editModal');
+        const newModal = document.getElementById('newModal');
+        if (event.target == modal) {
+            closeModal();
+        }
+        if (event.target == newModal) {
+            closeNewModal();
+        }
+    }
+
+    // Setup dos formulários
+    const editForm = document.getElementById('editForm');
+    if (editForm) {
+        editForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            try {
+                const formData = new FormData(editForm);
+                formData.append('action', 'edit');
+                
+                // Converte o valor formatado para o formato do banco
+                let valor = formData.get('valor');
+                valor = parseCurrencyToFloat(valor);
+                formData.set('valor', valor);
+
+                const response = await fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao atualizar lançamento');
+                }
+
+                closeModal();
+                location.reload();
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao atualizar o lançamento. Por favor, tente novamente.');
+            }
+        });
+    }
+
+    const newForm = document.getElementById('newForm');
+    if (newForm) {
+        newForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            try {
+                const formData = new FormData(newForm);
+                formData.append('action', 'new');
+                
+                // Converte o valor formatado para o formato do banco
+                let valor = formData.get('valor');
+                valor = parseCurrencyToFloat(valor);
+                formData.set('valor', valor);
+
+                const response = await fetch(window.location.href, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error('Erro ao criar lançamento');
+                }
+
+                closeNewModal();
+                location.reload();
+            } catch (error) {
+                console.error('Erro:', error);
+                alert('Erro ao criar o lançamento. Por favor, tente novamente.');
+            }
+        });
+    }
+
+    // Adiciona máscaras de moeda aos inputs
     const inputs = document.querySelectorAll('input[name="valor"]');
     inputs.forEach(input => {
         if (input) {
