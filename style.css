@@ -336,7 +336,7 @@ select option {
 }
 
 .btn-filter {
-    background-color: #007bff; /* Cor de fundo */
+    background-color: linear-gradient(135deg, #31629b, #4f8dce);
     color: white; /* Cor do texto */
     border: none; /* Remove a borda */
     padding: 10px 20px; /* Espaçamento interno */
