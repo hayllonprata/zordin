@@ -160,7 +160,6 @@ window.deleteLancamento = async function(id, table) {
     }
 }
 
-// Função para filtrar por data
 window.filtrarPorData = function(filtro) {
     let inicioMes, fimMes;
 
