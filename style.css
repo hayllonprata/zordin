@@ -335,7 +335,7 @@ select option {
     color: var(--text-color);
 }
 
-.btn-filter {
+.btn-filterZ {
     background-color: linear-gradient(135deg, #31629b, #4f8dce) !important;
     color: white; /* Cor do texto */
     border: none; /* Remove a borda */
