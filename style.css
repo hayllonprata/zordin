@@ -334,3 +334,18 @@ select option {
     background: var(--dark-bg);
     color: var(--text-color);
 }
+
+/* Adicione ao arquivo style.css */
+#filtroData {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--input-bg);
+    color: var(--text-color);
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+#filtroData:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+}

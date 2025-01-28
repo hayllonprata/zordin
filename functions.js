@@ -255,3 +255,33 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// Função para filtrar por data
+window.filtrarPorData = function(filtro) {
+    let inicioMes, fimMes;
+
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = hoje.getMonth();
+
+    switch (filtro) {
+        case 'atual':
+            inicioMes = new Date(ano, mes, 1).toISOString().split('T')[0];
+            fimMes = new Date(ano, mes + 1, 0).toISOString().split('T')[0];
+            break;
+        case 'anterior':
+            inicioMes = new Date(ano, mes - 1, 1).toISOString().split('T')[0];
+            fimMes = new Date(ano, mes, 0).toISOString().split('T')[0];
+            break;
+        case 'proximo':
+            inicioMes = new Date(ano, mes + 1, 1).toISOString().split('T')[0];
+            fimMes = new Date(ano, mes + 2, 0).toISOString().split('T')[0];
+            break;
+        default:
+            inicioMes = new Date(ano, mes, 1).toISOString().split('T')[0];
+            fimMes = new Date(ano, mes + 1, 0).toISOString().split('T')[0];
+    }
+
+    // Atualiza a URL com os parâmetros de filtro
+    window.location.href = window.location.pathname + `?inicioMes=${inicioMes}&fimMes=${fimMes}`;
+}

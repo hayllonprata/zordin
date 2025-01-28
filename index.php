@@ -127,79 +127,79 @@ require_once 'functions.php';
             </div>
         </div>
 
-        <!-- Lançamentos a Receber -->
-        <div class="card">
-            <h5>Recebimentos</h5>
-            <ul>
-                <?php
-                 $aReceberEntries = $operations->fetchContas('a_receber', "data BETWEEN '$inicioMes' AND '$fimMes'");
-                 foreach ($aReceberEntries as $entry):
-                ?>
-                <li>
-                    <div class="content-wrapper">
-                        <span class="description"><?= htmlspecialchars($entry['descricao']) ?></span>
-                        <span class="valor">R$ <?= number_format($entry['valor'], 2, ',', '.') ?></span>
-                        <span class="date"><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
-                    </div>
-                    <div class="buttons-wrapper">
-                        <button type="button"
-                            id="status-a_receber-<?= $entry['id'] ?>" 
-                            class="btn-status <?= str_replace(' ', '-', $entry['status']) ?>" 
-                            onclick="window.toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_receber')">
-                            <?= strtoupper($entry['status']) ?>
-                        </button>
-                        <button type="button"
-                            class="btn-edit"
-                            onclick="window.openEditModal(<?= $entry['id'] ?>, 'a_receber')">
-                            EDITAR
-                        </button>
-                        <button type="button"
-                            class="btn-delete"
-                            onclick="window.deleteLancamento(<?= $entry['id'] ?>, 'a_receber')">
-                            EXCLUIR
-                        </button>
-                    </div>
-                </li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
+ <!-- Lançamentos a Receber -->
+<div class="card">
+    <h5>Recebimentos</h5>
+    <ul>
+        <?php
+        $aReceberEntries = $operations->fetchContas('a_receber', "data BETWEEN '$inicioMes' AND '$fimMes'");
+        foreach ($aReceberEntries as $entry):
+        ?>
+        <li>
+            <div class="content-wrapper">
+                <span class="description"><?= htmlspecialchars($entry['descricao']) ?></span>
+                <span class="valor">R$ <?= number_format($entry['valor'], 2, ',', '.') ?></span>
+                <span class="date"><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
+            </div>
+            <div class="buttons-wrapper">
+                <button type="button"
+                    id="status-a_receber-<?= $entry['id'] ?>" 
+                    class="btn-status <?= str_replace(' ', '-', $entry['status']) ?>" 
+                    onclick="window.toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_receber')">
+                    <?= strtoupper($entry['status']) ?>
+                </button>
+                <button type="button"
+                    class="btn-edit"
+                    onclick="window.openEditModal(<?= $entry['id'] ?>, 'a_receber')">
+                    EDITAR
+                </button>
+                <button type="button"
+                    class="btn-delete"
+                    onclick="window.deleteLancamento(<?= $entry['id'] ?>, 'a_receber')">
+                    EXCLUIR
+                </button>
+            </div>
+        </li>
+        <?php endforeach; ?>
+    </ul>
+</div>
 
-        <!-- Lançamentos a Pagar -->
-        <div class="card">
-            <h5>Pagamentos</h5>
-            <ul>
-                <?php
-                $aPagarEntries = $operations->fetchContas('a_pagar', "data BETWEEN '$inicioMes' AND '$fimMes'");
-                foreach ($aPagarEntries as $entry):
-                ?>
-                <li>
-                    <div class="content-wrapper">
-                        <span class="description"><?= htmlspecialchars($entry['descricao']) ?></span>
-                        <span class="valor">R$ <?= number_format($entry['valor'], 2, ',', '.') ?></span>
-                        <span class="date"><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
-                    </div>
-                    <div class="buttons-wrapper">
-                        <button type="button"
-                            id="status-a_pagar-<?= $entry['id'] ?>" 
-                            class="btn-status <?= str_replace(' ', '-', $entry['status']) ?>" 
-                            onclick="window.toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_pagar')">
-                            <?= strtoupper($entry['status']) ?>
-                        </button>
-                        <button type="button"
-                            class="btn-edit"
-                            onclick="window.openEditModal(<?= $entry['id'] ?>, 'a_pagar')">
-                            EDITAR
-                        </button>
-                        <button type="button"
-                            class="btn-delete"
-                            onclick="window.deleteLancamento(<?= $entry['id'] ?>, 'a_pagar')">
-                            EXCLUIR
-                        </button>
-                    </div>
-                </li>
-                <?php endforeach; ?>
-            </ul>
-        </div>
+<!-- Lançamentos a Pagar -->
+<div class="card">
+    <h5>Pagamentos</h5>
+    <ul>
+        <?php
+        $aPagarEntries = $operations->fetchContas('a_pagar', "data BETWEEN '$inicioMes' AND '$fimMes'");
+        foreach ($aPagarEntries as $entry):
+        ?>
+        <li>
+            <div class="content-wrapper">
+                <span class="description"><?= htmlspecialchars($entry['descricao']) ?></span>
+                <span class="valor">R$ <?= number_format($entry['valor'], 2, ',', '.') ?></span>
+                <span class="date"><?= date('d/m/Y', strtotime($entry['data'])) ?></span>
+            </div>
+            <div class="buttons-wrapper">
+                <button type="button"
+                    id="status-a_pagar-<?= $entry['id'] ?>" 
+                    class="btn-status <?= str_replace(' ', '-', $entry['status']) ?>" 
+                    onclick="window.toggleStatus(<?= $entry['id'] ?>, '<?= $entry['status'] ?>', 'a_pagar')">
+                    <?= strtoupper($entry['status']) ?>
+                </button>
+                <button type="button"
+                    class="btn-edit"
+                    onclick="window.openEditModal(<?= $entry['id'] ?>, 'a_pagar')">
+                    EDITAR
+                </button>
+                <button type="button"
+                    class="btn-delete"
+                    onclick="window.deleteLancamento(<?= $entry['id'] ?>, 'a_pagar')">
+                    EXCLUIR
+                </button>
+            </div>
+        </li>
+        <?php endforeach; ?>
+    </ul>
+</div>
     </div>
 
     <!-- Scripts -->
