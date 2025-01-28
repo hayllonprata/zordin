@@ -270,7 +270,7 @@ li:hover {
 }
 
 .btn-save {
-    background: linear-gradient(135deg, #3CB770, #4BDC87);
+    background: linear-gradient(135deg, #31629b, #4f8dce);
     color: white;
     padding: 8px 16px;
     border-radius: 6px;
@@ -304,7 +304,7 @@ li:hover {
 }
 
 .btn-new {
-    background: linear-gradient(135deg, #3dafcc, #2a729c);
+    background: linear-gradient(135deg, #31629b, #4f8dce);
     color: white;
     padding: 0.75rem 2rem;
     border-radius: 8px;
