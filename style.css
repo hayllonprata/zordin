@@ -335,17 +335,17 @@ select option {
     color: var(--text-color);
 }
 
-/* Adicione ao arquivo style.css */
-#filtroData {
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: var(--input-bg);
-    color: var(--text-color);
-    font-size: 1rem;
-    cursor: pointer;
+.btn-filter {
+    background-color: #007bff; /* Cor de fundo */
+    color: white; /* Cor do texto */
+    border: none; /* Remove a borda */
+    padding: 10px 20px; /* Espaçamento interno */
+    margin: 5px; /* Margem entre os botões */
+    border-radius: 5px; /* Bordas arredondadas */
+    cursor: pointer; /* Cursor de ponteiro */
+    font-size: 14px; /* Tamanho da fonte */
 }
 
-#filtroData:hover {
-    border-color: rgba(255, 255, 255, 0.2);
+.btn-filter:hover {
+    background-color: #0056b3; /* Cor de fundo ao passar o mouse */
 }

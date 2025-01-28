@@ -61,14 +61,12 @@ require_once 'functions.php';
             <button type="button" class="btn-new" onclick="window.openNewModal()">NOVO LANÇAMENTO</button>
         </div>
 
-        <!-- Filtro de Pesquisa por Data -->
-        <div class="text-center mb-4">
-            <select id="filtroData" onchange="window.filtrarPorData(this.value)">
-                <option value="atual">Mês Atual</option>
-                <option value="anterior">Mês Anterior</option>
-                <option value="proximo">Próximo Mês</option>
-            </select>
-        </div>
+<!-- Botões de Filtro por Data -->
+<div class="text-center mb-4">
+    <button type="button" class="btn-filter" onclick="window.filtrarPorData('atual')">Mês Atual</button>
+    <button type="button" class="btn-filter" onclick="window.filtrarPorData('anterior')">Mês Anterior</button>
+    <button type="button" class="btn-filter" onclick="window.filtrarPorData('proximo')">Próximo Mês</button>
+</div>
 
         <!-- Modal de Edição -->
         <div id="editModal" class="modal">
