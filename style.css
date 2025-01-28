@@ -59,13 +59,13 @@ html, body {
 
 /* Card de Recebimentos - Verde Premium */
 .card-receber {
-    background: linear-gradient(135deg, #3dafcc, #3ab96b);
+    background: linear-gradient(135deg, #14414d, #146935);
     border: 1px solid rgba(124, 184, 148, 0.2);
 }
 
 /* Card de Pagamentos - Vermelho Premium */
 .card-pagar {
-    background: linear-gradient(135deg, #e06155, #c9815b);
+    background: linear-gradient(135deg, #5c2621, #3b2417);
     border: 1px solid rgba(193, 122, 122, 0.2);
 }
 .negative{
