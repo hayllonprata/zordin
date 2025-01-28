@@ -11,13 +11,12 @@ require_once 'functions.php';
     <title>Zordin - Dinheiro com Inteligência</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
-
     <link href="style.css" rel="stylesheet">
 </head>
 <body>
     <div class="container">
-    <div class="logo-container"></div>
-    <div class="slogan">Dinheiro com Inteligência</div>
+        <div class="logo-container"></div>
+        <div class="slogan">Dinheiro com Inteligência</div>
 
         <!-- Totais do dia -->
         <div class="row">
@@ -60,6 +59,16 @@ require_once 'functions.php';
         <!-- Botão Novo Lançamento -->
         <div class="text-center mb-4">
             <button type="button" class="btn-new" onclick="window.openNewModal()">NOVO LANÇAMENTO</button>
+        </div>
+
+        <!-- Filtro de Pesquisa por Data -->
+        <div class="text-center mb-4">
+            <label for="filtroData">Filtrar por:</label>
+            <select id="filtroData" onchange="window.filtrarPorData(this.value)">
+                <option value="atual">Mês Atual</option>
+                <option value="anterior">Mês Anterior</option>
+                <option value="proximo">Próximo Mês</option>
+            </select>
         </div>
 
         <!-- Modal de Edição -->
@@ -132,8 +141,8 @@ require_once 'functions.php';
             <h5>Recebimentos</h5>
             <ul>
                 <?php
-                 $aReceberEntries = $operations->fetchContas('a_receber', "data BETWEEN '$inicioMes' AND '$fimMes'");
-                 foreach ($aReceberEntries as $entry):
+                $aReceberEntries = $operations->fetchContas('a_receber', "data BETWEEN '$inicioMes' AND '$fimMes'");
+                foreach ($aReceberEntries as $entry):
                 ?>
                 <li>
                     <div class="content-wrapper">
@@ -206,4 +215,4 @@ require_once 'functions.php';
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="functions.js"></script>
 </body>
-</html
+</html>
