@@ -63,7 +63,6 @@ require_once 'functions.php';
 
         <!-- Filtro de Pesquisa por Data -->
         <div class="text-center mb-4">
-            <label for="filtroData">Filtrar por:</label>
             <select id="filtroData" onchange="window.filtrarPorData(this.value)">
                 <option value="atual">Mês Atual</option>
                 <option value="anterior">Mês Anterior</option>
