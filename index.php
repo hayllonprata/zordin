@@ -127,6 +127,23 @@ require_once 'functions.php';
             </div>
         </div>
 
+
+<!-- Botão Novo Lançamento -->
+<div class="text-center mb-4">
+    <button type="button" class="btn-new" onclick="window.openNewModal()">NOVO LANÇAMENTO</button>
+</div>
+
+<!-- Filtro de Pesquisa por Data -->
+<div class="text-center mb-4">
+    <label for="filtroData">Filtrar por:</label>
+    <select id="filtroData" onchange="window.filtrarPorData(this.value)">
+        <option value="atual">Mês Atual</option>
+        <option value="anterior">Mês Anterior</option>
+        <option value="proximo">Próximo Mês</option>
+    </select>
+</div>
+
+
  <!-- Lançamentos a Receber -->
 <div class="card">
     <h5>Recebimentos</h5>
