@@ -63,9 +63,9 @@ require_once 'functions.php';
 
 <!-- Botões de Filtro por Data -->
 <div class="text-center mb-4">
-    <button type="button" class="btn-filterZ" onclick="window.filtrarPorData('anterior')">Mês Anterior</button>
-    <button type="button" class="btn-filterZ" onclick="window.filtrarPorData('atual')">Mês Atual</button>
-    <button type="button" class="btn-filterZ" onclick="window.filtrarPorData('proximo')">Próximo Mês</button>
+    <a href="#" class="btn-filterZ" onclick="window.filtrarPorData('anterior')">Mês Anterior</a>
+    <a href="#" class="btn-filterZ" onclick="window.filtrarPorData('atual')">Mês Atual</a>
+    <a href="#" class="btn-filterZ" onclick="window.filtrarPorData('proximo')">Próximo Mês</a>
 </div>
 
         <!-- Modal de Edição -->
